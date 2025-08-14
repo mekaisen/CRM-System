@@ -1,0 +1,11 @@
+.button_classic {
+  color: white;
+  border-radius: 10px;
+}
+.button_underline {
+  &:hover {
+    color: #1aabe2;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}

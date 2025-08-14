@@ -1,11 +1,11 @@
-import { Todo } from './pages/Todo/Todo';
+import { Todos } from './pages/Todo/Todos';
 
 import './App.css';
 
 const App = () => {
   return (
     <>
-      <Todo />
+      <Todos />
     </>
   );
 };

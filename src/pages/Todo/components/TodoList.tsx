@@ -1,10 +1,11 @@
 import { useState } from 'react';
 
-import { IconEdit } from '@/components/icons/IconEdit';
-import { IconTrash } from '@/components/icons/IconTrash';
-import { deleteTodo, putTodo } from '@/helpers/api/requests/todos';
+import { Button } from '@/components/ui/Button';
+import { getTodos } from '@/helpers/api/requests/todos';
 
-import styles from './todoList.module.css';
+import { TodoItem } from './TodoItem';
+
+import styles from '../todo.module.css';
 interface TodoListProps {
   allTodos: Todo[];
   className?: string;
@@ -13,113 +14,65 @@ interface TodoListProps {
   setTodosInfo: (value: React.SetStateAction<TodoInfo>) => void;
 }
 
-export const TodoList = ({ todosInfo, allTodos, className, setAllTodos }: TodoListProps) => {
-  const [todoEditTitle, setTodoEditTitle] = useState('');
-  const [currentEditTodo, setCurrentEditTodo] = useState<Todo | null>(null);
-
+export const TodoList = ({
+  todosInfo,
+  allTodos,
+  className,
+  setAllTodos,
+  setTodosInfo
+}: TodoListProps) => {
+  const [todosFilter, setTodosFilter] = useState<'all' | 'completed' | 'inWork'>('all');
   return (
     <div className={className}>
-      <div>
-        <div>Все ({todosInfo?.all})</div>
-        <div>В работе ({todosInfo?.inWork})</div>
-        <div>Сделано ({todosInfo?.completed})</div>
+      <div className={styles.filters}>
+        <Button
+          className={styles.filter_button}
+          type='button'
+          variant='underline'
+          onClick={async () => {
+            setAllTodos((await getTodos('all')).data);
+            setTodosFilter('all');
+          }}
+        >
+          Все ({todosInfo?.all})
+        </Button>
+        <Button
+          className={styles.filter_button}
+          type='button'
+          variant='underline'
+          onClick={async () => {
+            setAllTodos((await getTodos('inWork')).data);
+            setTodosFilter('inWork');
+          }}
+        >
+          В работе ({todosInfo?.inWork})
+        </Button>
+        <Button
+          className={styles.filter_button}
+          type='button'
+          variant='underline'
+          onClick={async () => {
+            setAllTodos((await getTodos('completed')).data);
+            setTodosFilter('completed');
+          }}
+        >
+          Сделано ({todosInfo?.completed})
+        </Button>
       </div>
-      <ul>
+
+      <ul className={styles.todos}>
         {allTodos.map((todo) => {
           return (
-            <li key={todo.id}>
-              <div>
-                <input id={todo.id.toString()} type='checkbox' />
-                {todo.id === currentEditTodo?.id ? (
-                  <input
-                    type='text'
-                    value={todoEditTitle}
-                    onChange={(e) => {
-                      setTodoEditTitle(e.target.value);
-                    }}
-                  />
-                ) : (
-                  <label htmlFor={todo.id.toString()}>{todo.title}</label>
-                )}
-              </div>
-              {todo.id !== currentEditTodo?.id ? (
-                <div className={styles.flex}>
-                  <button
-                    type='button'
-                    onClick={() => {
-                      setCurrentEditTodo(todo);
-                      setTodoEditTitle(todo.title);
-                    }}
-                  >
-                    <IconEdit color='red' />
-                  </button>
-
-                  <button
-                    type='button'
-                    onClick={async () => {
-                      const indexDeleteTodo = allTodos.findIndex((t) => t.id === todo.id);
-                      const deletedTodo = allTodos[indexDeleteTodo];
-                      setAllTodos((prev) => prev.filter((t) => todo.id !== t.id));
-                      try {
-                        await deleteTodo(todo.id);
-                      } catch (error) {
-                        console.log(error);
-                        setAllTodos((prev) => {
-                          const todos = [...prev];
-                          todos.splice(indexDeleteTodo, 0, deletedTodo);
-                          return todos;
-                        });
-                      }
-
-                      // await fetchAllTodoAndSave();
-                    }}
-                  >
-                    <IconTrash />
-                  </button>
-                </div>
-              ) : (
-                <div className={styles.flex}>
-                  <button
-                    type='button'
-                    onClick={async () => {
-                      const currentEditTodoId = currentEditTodo?.id;
-                      setCurrentEditTodo(null);
-                      setAllTodos((prev) =>
-                        prev.map((todo) =>
-                          todo.id === currentEditTodoId ? { ...todo, title: todoEditTitle } : todo
-                        )
-                      );
-                      try {
-                        const serverTodo = await putTodo(
-                          { isDone: todo.isDone, title: todoEditTitle },
-                          todo.id
-                        );
-                        if (serverTodo) {
-                          console.log('true');
-                          setAllTodos((prev) =>
-                            prev.map((todo) => (todo.id === currentEditTodoId ? serverTodo : todo))
-                          );
-                        }
-                      } catch (error) {
-                        console.log(error);
-                        setAllTodos((prev) => prev.filter((todo) => todo.id !== currentEditTodoId));
-                      }
-                    }}
-                  >
-                    сохранить
-                  </button>
-
-                  <button
-                    type='button'
-                    onClick={async () => {
-                      setCurrentEditTodo(null);
-                    }}
-                  >
-                    отменить
-                  </button>
-                </div>
-              )}
-            </li>
+            <TodoItem
+              key={todo.id}
+              className={styles.todo}
+              allTodos={allTodos}
+              setAllTodos={setAllTodos}
+              setTodosInfo={setTodosInfo}
+              todo={todo}
+              todosFilter={todosFilter}
+              todosInfo={todosInfo}
+            />
           );
         })}
       </ul>
