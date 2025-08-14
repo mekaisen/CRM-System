@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react';
 
-import { deleteTodo, getTodos, postTodo, putTodo } from '@/helpers/api/requests/todos';
+import { getTodos } from '@/helpers/api/requests/todos';
 
-import { IconEdit } from '../../components/icons/IconEdit';
-import { IconTrash } from '../../components/icons/IconTrash';
-
-import styles from './todo.module.css';
+import { TodoInput } from './components/TodoInput';
+import { TodoList } from './components/TodoList';
 
 export const Todo = () => {
-  const [todoTitle, setTodoTitle] = useState('');
-  const [todoEditTitle, setTodoEditTitle] = useState('');
-  const [currentEditTodo, setCurrentEditTodo] = useState<Todo | null>(null);
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
-  const [todosInfo, setTodosInfo] = useState<TodoInfo>();
+  const [todosInfo, setTodosInfo] = useState<TodoInfo>({ all: 0, completed: 0, inWork: 0 });
   const fetchAllTodoAndSave = async () => {
     const res = await getTodos('all');
-    setTodosInfo(res.info);
+    setTodosInfo(res.info ?? { all: 0, completed: 0, inWork: 0 });
     setAllTodos(res.data);
   };
   useEffect(() => {
@@ -24,89 +19,13 @@ export const Todo = () => {
 
   return (
     <>
-      <div>
-        <input
-          type='text'
-          value={todoTitle}
-          onChange={(e) => {
-            setTodoTitle(e.target.value);
-          }}
-          placeholder='Task To Be Done...'
-        />
-        <button
-          type='button'
-          onClick={async () => {
-            setTodoTitle('');
-            await postTodo({ isDone: false, title: todoTitle });
-            await fetchAllTodoAndSave();
-          }}
-        >
-          Add
-        </button>
-      </div>
-      <div>
-        <div>
-          <div>Все ({todosInfo?.all})</div>
-          <div>В работе ({todosInfo?.inWork})</div>
-          <div>Сделано ({todosInfo?.completed})</div>
-        </div>
-        <ul>
-          {allTodos.map((todo) => {
-            return (
-              <li key={todo.id}>
-                <div>
-                  <input id={todo.id.toString()} type='checkbox' />
-                  {todo.id === currentEditTodo?.id ? (
-                    <input
-                      type='text'
-                      value={todoEditTitle}
-                      onChange={(e) => {
-                        setTodoEditTitle(e.target.value);
-                      }}
-                    />
-                  ) : (
-                    <label htmlFor={todo.id.toString()}>{todo.title}</label>
-                  )}
-                </div>
-                <div className={styles.flex}>
-                  {todo.id === currentEditTodo?.id ? (
-                    <button
-                      type='button'
-                      onClick={async () => {
-                        setCurrentEditTodo(null);
-
-                        await putTodo({ isDone: todo.isDone, title: todoEditTitle }, todo.id);
-                        await fetchAllTodoAndSave();
-                      }}
-                    >
-                      <IconEdit color='red' />
-                    </button>
-                  ) : (
-                    <button
-                      type='button'
-                      onClick={() => {
-                        setCurrentEditTodo(todo);
-                        setTodoEditTitle(todo.title);
-                      }}
-                    >
-                      <IconEdit color='red' />
-                    </button>
-                  )}
-                  <button
-                    type='button'
-                    onClick={async () => {
-                      await deleteTodo(todo.id);
-                      await fetchAllTodoAndSave();
-                    }}
-                  >
-                    <IconTrash />
-                  </button>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      <TodoInput setAllTodos={setAllTodos} setTodosInfo={setTodosInfo} />
+      <TodoList
+        allTodos={allTodos}
+        setAllTodos={setAllTodos}
+        setTodosInfo={setTodosInfo}
+        todosInfo={todosInfo}
+      />
     </>
   );
 };
