@@ -5,7 +5,6 @@ import { getTodos } from '@/helpers/api/requests/todos';
 import { TodoInput } from './components/TodoInput';
 import { TodoList } from './components/TodoList';
 
-import styles from './todo.module.css';
 export const Todos = () => {
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
   const [todosInfo, setTodosInfo] = useState<TodoInfo>({ all: 0, completed: 0, inWork: 0 });
