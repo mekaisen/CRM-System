@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { IconEdit } from '@/components/icons/IconEdit';
 import { IconTrash } from '@/components/icons/IconTrash';
 import { Button } from '@/components/ui/Button';
-import { deleteTodo, putTodo } from '@/helpers/api/requests/todos';
+import { deleteTodo, getTodos, putTodo } from '@/helpers/api/requests/todos';
 import { filterTodos } from '@/helpers/utils/filterTodos';
 import { validateTitle } from '@/helpers/utils/validateTitle';
 
@@ -34,7 +34,62 @@ export const TodoItem = ({
   const controller = useRef<AbortController | null>(null);
   const initialTodos = useRef<Todo[]>(allTodos);
   const initialTodosInfo = useRef<TodoInfo>(todosInfo);
+  const changeTodo = async (isDone: boolean, title: string, settings?: FetchConfig) => {
+    try {
+      await putTodo({ isDone, title }, todo.id, settings);
+      const todos = await getTodos(todosFilter, settings);
+      initialTodos.current = todos.data;
+      setAllTodos(todos.data);
+      setTodosInfo(todos.info as TodoInfo);
+    } catch (error) {
+      if (!(error instanceof Error)) return;
+      if ('name' in error && error.name === 'AbortError') {
+        return;
+      }
 
+      console.error(error);
+      const todos = await getTodos(todosFilter, settings);
+      if (todos) {
+        const prevTodos = filterTodos(todos.data, todosFilter);
+        setAllTodos(prevTodos);
+        setTodosInfo(todos.info as TodoInfo);
+      } else {
+        const prevTodos = filterTodos(initialTodos.current, todosFilter);
+        setAllTodos(prevTodos);
+
+        setTodosInfo(initialTodosInfo.current);
+      }
+    }
+  };
+  const removeTodo = async (
+    todo: Todo,
+    indexDeleteTodo: number,
+    deletedTodo: Todo,
+    settings?: FetchConfig
+  ) => {
+    try {
+      await deleteTodo(todo.id);
+      const todos = await getTodos(todosFilter, settings);
+      initialTodos.current = todos.data;
+      setAllTodos(todos.data);
+      setTodosInfo(todos.info as TodoInfo);
+    } catch (error) {
+      console.error(error);
+      const todos = await getTodos(todosFilter, settings);
+      if (todos) {
+        const prevTodos = filterTodos(todos.data, todosFilter);
+        setAllTodos(prevTodos);
+        setTodosInfo(todos.info as TodoInfo);
+      } else {
+        setAllTodos((prev) => {
+          const todos = [...prev];
+          todos.splice(indexDeleteTodo, 0, deletedTodo);
+          return todos;
+        });
+        setTodosInfo(initialTodosInfo.current);
+      }
+    }
+  };
   return (
     <>
       <li className={className}>
@@ -67,23 +122,7 @@ export const TodoItem = ({
                 }
                 return newInfo;
               });
-              try {
-                await putTodo({ isDone: isChecked, title: todo.title }, todo.id, {
-                  signal: controller.current.signal
-                });
-              } catch (error) {
-                if (!(error instanceof Error)) return;
-                if ('name' in error && error.name === 'AbortError') {
-                  return;
-                }
-                console.error(error);
-
-                const prevTodos = filterTodos(initialTodos.current, todosFilter);
-
-                setAllTodos(prevTodos);
-
-                setTodosInfo(initialTodosInfo.current);
-              }
+              changeTodo(isChecked, todo.title, { signal: controller.current.signal });
             }}
           />
           {isEdit ? (
@@ -125,20 +164,7 @@ export const TodoItem = ({
                     todo.id === currentEditTodoId ? { ...todo, title: todoEditTitle } : todo
                   )
                 );
-                try {
-                  const serverTodo = await putTodo(
-                    { isDone: todo.isDone, title: todoEditTitle },
-                    todo.id
-                  );
-                  if (serverTodo) {
-                    setAllTodos((prev) =>
-                      prev.map((todo) => (todo.id === currentEditTodoId ? serverTodo : todo))
-                    );
-                  }
-                } catch (error) {
-                  console.error(error);
-                  setAllTodos((prev) => prev.filter((todo) => todo.id !== currentEditTodoId));
-                }
+                changeTodo(todo.isDone, todoEditTitle);
               }}
             >
               сохранить
@@ -187,17 +213,7 @@ export const TodoItem = ({
                   }
                   return newInfo;
                 });
-                try {
-                  await deleteTodo(todo.id);
-                } catch (error) {
-                  console.error(error);
-                  setAllTodos((prev) => {
-                    const todos = [...prev];
-                    todos.splice(indexDeleteTodo, 0, deletedTodo);
-                    return todos;
-                  });
-                  setTodosInfo(initialTodosInfo.current);
-                }
+                removeTodo(todo, indexDeleteTodo, deletedTodo);
               }}
             >
               <IconTrash className={styles.svg} />
