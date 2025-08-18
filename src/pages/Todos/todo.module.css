@@ -6,16 +6,7 @@
   }
 }
 
-.button_red {
-  background-color: rgba(255, 0, 0, 0.726);
-}
-.button_blue {
-  background-color: #1aabe2;
-}
-.edit_button {
-  width: 50px;
-  height: 50px;
-}
+
 .flex {
   display: flex;
   align-items: center;
@@ -45,8 +36,6 @@
 }
 
 .add {
-  width: 120px;
-  height: 50px;
   flex-shrink: 0;
 }
 .input {

@@ -1,27 +1,26 @@
-interface TodoRequest {
+export interface TodoRequest {
   isDone?: boolean; // изменение статуса задачи происходит через этот флаг
   title?: string;
 }
-// или так type TodoRequest = Partial<Omit<Todo, "id" | "created">>;
+// или так type TodoRequest = Partial<Omit<Todos, "id" | "created">>;
 
-interface Todo {
+export interface Todo {
   created: string; // ISO date string
   id: number;
   isDone: boolean;
   title: string;
 }
 
-interface TodoInfo {
+export interface TodoInfo {
   all: number;
   completed: number;
   inWork: number;
 }
 
-interface MetaResponse<T, N> {
+export interface MetaResponse<T, N> {
   data: T[];
   info?: N;
   meta: {
     totalAmount: number;
   };
 }
-type FetchConfig = Omit<RequestInit, 'headers' | 'method'>;

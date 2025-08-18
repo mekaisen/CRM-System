@@ -1,8 +1,36 @@
+
+
+
+.button_primary{
+  background: #1aabe2;
+}
+.button_dangerous{
+  background-color: rgba(255, 0, 0, 0.726);;
+}
+.button_small{
+  width: 50px;
+  height: 50px;
+}
+.button_medium{
+  width: 100px;
+  height: 50px;
+}
+.button_large{
+  width: 120px;
+  height: 50px;
+}
 .button_classic {
   color: white;
   border-radius: 10px;
 }
+.button_active{
+  color: #1aabe2;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .button_underline {
+  background-color: transparent;
   &:hover {
     color: #1aabe2;
     text-decoration: underline;

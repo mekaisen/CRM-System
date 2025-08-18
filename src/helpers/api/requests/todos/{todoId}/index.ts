@@ -1,38 +1,28 @@
-import { API_PATH } from '@/helpers/const/api';
+import type { Todo, TodoRequest } from '@/types/todos.ts';
 
-export const getTodo = (todoId: number, options?: FetchConfig): Promise<Todo> => {
-  return fetch(`${API_PATH.TODO}/${todoId}`, {
-    method: 'GET',
-    headers: {
-      'Content-type': 'application/json'
-    },
-    ...options
-  }).then((res) => res.json());
-};
+import { baseUrl } from '@/helpers/const/api.ts';
 
-export const putTodo = (
-  body: TodoRequest,
-  todoId: number,
-  options?: FetchConfig
-): Promise<Todo> => {
-  return fetch(`${API_PATH.TODO}/${todoId}`, {
+export const putTodo = (todoRequest: TodoRequest, todoId: number): Promise<Todo> => {
+  return fetch(`${baseUrl}/todos/${todoId}`, {
     method: 'PUT',
-    body: JSON.stringify(body),
+    body: JSON.stringify(todoRequest),
     headers: {
       'Content-type': 'application/json'
-    },
-    ...options
-  }).then((res) => res.json());
+    }
+  })
+    .then((res) => res.json())
+    .catch((error) => {
+      throw new Error(error);
+    });
 };
 
-export const deleteTodo = (todoId: number, options?: FetchConfig): Promise<string> => {
-  return fetch(`${API_PATH.TODO}/${todoId}`, {
+export const deleteTodo = (todoId: number): Promise<Response> => {
+  return fetch(`${baseUrl}/todos/${todoId}`, {
     method: 'DELETE',
     headers: {
       'Content-type': 'application/json'
-    },
-    ...options
-  }).then((res) => {
-    return res.text();
+    }
+  }).catch((error) => {
+    throw new Error(error);
   });
 };

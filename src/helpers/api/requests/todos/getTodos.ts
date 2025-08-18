@@ -1,16 +1,18 @@
-import { API_PATH } from '@/helpers/const/api';
+import type { MetaResponse, Todo, TodoInfo } from '@/types/todos.ts';
 
-type Status = 'all' | 'completed' | 'inWork';
+import { baseUrl } from '@/helpers/const/api';
 
-export const getTodos = (
-  status: Status,
-  options?: FetchConfig
-): Promise<MetaResponse<Todo, TodoInfo>> => {
-  return fetch(`${API_PATH.TODO}?filter=${status}`, {
+export type TodoFilters = 'all' | 'completed' | 'inWork';
+
+export const getTodos = (filter: TodoFilters): Promise<MetaResponse<Todo, TodoInfo>> => {
+  return fetch(`${baseUrl}/todos?filter=${filter}`, {
     method: 'GET',
     headers: {
       'Content-type': 'application/json'
-    },
-    ...options
-  }).then((res) => res.json());
+    }
+  })
+    .then((res) => res.json())
+    .catch((error) => {
+      throw new Error(error);
+    });
 };
