@@ -1,4 +1,4 @@
-import type { TodoFilters } from '@/helpers/api/requests/todos';
+import type { TodoFilters } from '@/api/todos.ts';
 import type { Todo, TodoInfo } from '@/types/todos.ts';
 
 import { TodosFilters } from '@/components/TodosFilters.tsx';

@@ -2,6 +2,8 @@ import type { MetaResponse, Todo, TodoInfo, TodoRequest } from '@/types/todos.ts
 
 import { baseUrl } from '@/helpers/const/api.ts';
 
+export type TodoFilters = 'all' | 'completed' | 'inWork';
+
 export const putTodo = (todoRequest: TodoRequest, todoId: number): Promise<Todo> => {
   return fetch(`${baseUrl}/todos/${todoId}`, {
     method: 'PUT',
@@ -26,8 +28,6 @@ export const deleteTodo = (todoId: number): Promise<Response> => {
     throw new Error(error);
   });
 };
-
-export type TodoFilters = 'all' | 'completed' | 'inWork';
 
 export const getTodos = (filter: TodoFilters): Promise<MetaResponse<Todo, TodoInfo>> => {
   return fetch(`${baseUrl}/todos?filter=${filter}`, {
