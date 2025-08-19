@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { TodoFilters } from '@/helpers/api/requests/todos';
+import type { TodoFilters } from '@/api/todos.ts';
 import type { TodoInfo } from '@/types/todos.ts';
 
 import { Button } from '@/components/ui/Button.tsx';

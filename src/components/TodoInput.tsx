@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
+import { postTodo } from '@/api/todos.ts';
 import { Button } from '@/components/ui/Button.tsx';
-import { postTodo } from '@/helpers/api/requests/todos';
 import { validateTitle } from '@/helpers/utils/validateTitle.ts';
 
 import styles from '@/pages/Todos/todo.module.css';

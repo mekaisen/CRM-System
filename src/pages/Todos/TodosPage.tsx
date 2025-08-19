@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import type { TodoFilters } from '@/helpers/api/requests/todos';
+import type { TodoFilters } from '@/api/todos.ts';
 import type { Todo, TodoInfo } from '@/types/todos.ts';
 
-import { getTodos } from '@/helpers/api/requests/todos';
+import { getTodos } from '@/api/todos.ts';
 
 import { TodoInput } from '../../components/TodoInput.tsx';
 import { TodoList } from '../../components/TodoList.tsx';

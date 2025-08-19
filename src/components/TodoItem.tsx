@@ -2,10 +2,10 @@ import { useState } from 'react';
 
 import type { Todo } from '@/types/todos.ts';
 
+import { deleteTodo, putTodo } from '@/api/todos.ts';
 import { IconEdit } from '@/assets/icons/IconEdit.tsx';
 import { IconTrash } from '@/assets/icons/IconTrash.tsx';
 import { Button } from '@/components/ui/Button.tsx';
-import { deleteTodo, putTodo } from '@/helpers/api/requests/todos';
 import { validateTitle } from '@/helpers/utils/validateTitle.ts';
 
 import styles from '@/pages/Todos/todo.module.css';
