@@ -1,40 +1,21 @@
-import type { TodoFilters } from '@/api/todos.ts';
-import type { Todo, TodoInfo } from '@/types/todos.ts';
-
-import { TodosFilters } from '@/components/TodosFilters.tsx';
+import type { Todo } from '@/types/todos.ts';
 
 import { TodoItem } from './TodoItem.tsx';
 
 import styles from '@/pages/Todos/todo.module.css';
 
 interface TodoListProps {
-  allTodos: Todo[];
-  className?: string;
-  todosInfo: TodoInfo;
-  getFilteredTodos: () => Promise<void>;
-  onChangeFilter: (status: TodoFilters) => void;
+  todos: Todo[];
+  onUpdate: () => Promise<void>;
 }
 
-export const TodoList = ({
-  todosInfo,
-  allTodos,
-  className,
-  onChangeFilter,
-  getFilteredTodos
-}: TodoListProps) => {
+export const TodoList = ({ todos, onUpdate }: TodoListProps) => {
   return (
-    <div className={className}>
-      <TodosFilters onChangeFilter={onChangeFilter} todosInfo={todosInfo} />
-
+    <div>
       <ul className={styles.todos}>
-        {allTodos.map((todo) => {
+        {todos.map((todo) => {
           return (
-            <TodoItem
-              key={todo.id}
-              className={styles.todo}
-              getFilteredTodos={getFilteredTodos}
-              todo={todo}
-            />
+            <TodoItem key={todo.id} className={styles.todo} onUpdateTodo={onUpdate} todo={todo} />
           );
         })}
       </ul>

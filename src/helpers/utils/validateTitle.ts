@@ -1,4 +1,4 @@
-export const validateTitle = (title: string) => {
+export const validateTitle = (title: string): string => {
   const trimTitle = title.trim();
 
   if (!trimTitle) {

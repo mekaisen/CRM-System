@@ -1,8 +1,6 @@
-import type { MetaResponse, Todo, TodoInfo, TodoRequest } from '@/types/todos.ts';
+import type { MetaResponse, Todo, TodoFilters, TodoInfo, TodoRequest } from '@/types/todos.ts';
 
 import { baseUrl } from '@/helpers/const/api.ts';
-
-export type TodoFilters = 'all' | 'completed' | 'inWork';
 
 export const putTodo = (todoRequest: TodoRequest, todoId: number): Promise<Todo> => {
   return fetch(`${baseUrl}/todos/${todoId}`, {

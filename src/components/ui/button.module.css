@@ -1,11 +1,13 @@
-
-
+:root {
+  --color-primary: #1aabe2;
+  --color-dangerous: #DC2D2DFF
+}
 
 .button_primary{
-  background: #1aabe2;
+  background: var(--color-primary);
 }
 .button_dangerous{
-  background-color: rgba(255, 0, 0, 0.726);;
+  background-color: var(--color-dangerous);;
 }
 .button_small{
   width: 50px;
@@ -24,7 +26,7 @@
   border-radius: 10px;
 }
 .button_active{
-  color: #1aabe2;
+  color: var(--color-primary);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -32,7 +34,7 @@
 .button_underline {
   background-color: transparent;
   &:hover {
-    color: #1aabe2;
+    color: var(--color-primary);
     text-decoration: underline;
     text-underline-offset: 3px;
   }

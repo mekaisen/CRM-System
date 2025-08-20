@@ -7,11 +7,10 @@ import { validateTitle } from '@/helpers/utils/validateTitle.ts';
 import styles from '@/pages/Todos/todo.module.css';
 
 interface TodoInputProps {
-  className?: string;
-  getFilteredTodos: () => Promise<void>;
+  onUpdate: () => Promise<void>;
 }
 
-export const TodoInput = ({ className, getFilteredTodos }: TodoInputProps) => {
+export const TodoInput = ({ onUpdate }: TodoInputProps) => {
   const [todoTitle, setTodoTitle] = useState('');
   const [todoTitleError, setTodoTitleError] = useState('');
 
@@ -27,7 +26,7 @@ export const TodoInput = ({ className, getFilteredTodos }: TodoInputProps) => {
       const serverTodo = await postTodo({ isDone: false, title: todoTitle });
 
       if (serverTodo) {
-        await getFilteredTodos();
+        await onUpdate();
       }
 
       setTodoTitle('');
@@ -36,24 +35,24 @@ export const TodoInput = ({ className, getFilteredTodos }: TodoInputProps) => {
     }
   };
 
+  const onCreateTodo = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onAddTodo();
+  };
+
+  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTodoTitle(value);
+    setTodoTitleError(validateTitle(value));
+  };
   return (
     <>
-      <form
-        className={`${className} ${styles.addTodo}`}
-        onSubmit={async (e) => {
-          e.preventDefault();
-          onAddTodo();
-        }}
-      >
+      <form className={`${styles.addTodo}`} onSubmit={onCreateTodo}>
         <div className={styles.input}>
           <input
             type='text'
             value={todoTitle}
-            onChange={(e) => {
-              const value = e.target.value;
-              setTodoTitle(value);
-              setTodoTitleError(validateTitle(value));
-            }}
+            onChange={onChangeTitle}
             placeholder='Task To Be Done...'
           />
         </div>

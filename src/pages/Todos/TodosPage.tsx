@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import type { TodoFilters } from '@/api/todos.ts';
-import type { Todo, TodoInfo } from '@/types/todos.ts';
+import type { Todo, TodoFilters, TodoInfo } from '@/types/todos.ts';
 
 import { getTodos } from '@/api/todos.ts';
-
-import { TodoInput } from '../../components/TodoInput.tsx';
-import { TodoList } from '../../components/TodoList.tsx';
+import { TodoInput } from '@/components/TodoInput.tsx';
+import { TodoList } from '@/components/TodoList.tsx';
+import { TodosFilters } from '@/components/TodosFilters.tsx';
 
 export const TodosPage = () => {
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
@@ -48,13 +47,9 @@ export const TodosPage = () => {
 
   return (
     <>
-      <TodoInput getFilteredTodos={getFilteredTodos} />
-      <TodoList
-        allTodos={allTodos}
-        getFilteredTodos={getFilteredTodos}
-        onChangeFilter={onChangeFilter}
-        todosInfo={todosInfo}
-      />
+      <TodoInput onUpdate={getFilteredTodos} />
+      <TodosFilters onChange={onChangeFilter} todosInfo={todosInfo} />
+      <TodoList onUpdate={getFilteredTodos} todos={allTodos} />
     </>
   );
 };

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
-import type { TodoFilters } from '@/api/todos.ts';
-import type { TodoInfo } from '@/types/todos.ts';
+import type { TodoFilters, TodoInfo } from '@/types/todos.ts';
 
 import { Button } from '@/components/ui/Button.tsx';
 
@@ -9,11 +8,17 @@ import styles from '@/pages/Todos/todo.module.css';
 
 interface TodoFiltersProps {
   todosInfo: TodoInfo;
-  onChangeFilter: (status: TodoFilters) => void;
+  onChange: (status: TodoFilters) => void;
 }
 
-export const TodosFilters = ({ onChangeFilter, todosInfo }: TodoFiltersProps) => {
+export const TodosFilters = ({ onChange, todosInfo }: TodoFiltersProps) => {
   const [currentActive, setCurrentActive] = useState<TodoFilters>('all');
+
+  const onChangeFilter = (filter: TodoFilters) => {
+    onChange(filter);
+    setCurrentActive(filter);
+  };
+
   return (
     <div className={styles.filters}>
       <Button
@@ -23,10 +28,7 @@ export const TodosFilters = ({ onChangeFilter, todosInfo }: TodoFiltersProps) =>
         type='button'
         variant='underline'
         color={'primary'}
-        onClick={() => {
-          onChangeFilter('all');
-          setCurrentActive('all');
-        }}
+        onClick={() => onChangeFilter('all')}
       >
         Все ({todosInfo?.all})
       </Button>
@@ -37,10 +39,7 @@ export const TodosFilters = ({ onChangeFilter, todosInfo }: TodoFiltersProps) =>
         type='button'
         variant='underline'
         color={'primary'}
-        onClick={() => {
-          onChangeFilter('inWork');
-          setCurrentActive('inWork');
-        }}
+        onClick={() => onChangeFilter('inWork')}
       >
         В работе ({todosInfo?.inWork})
       </Button>
@@ -51,10 +50,7 @@ export const TodosFilters = ({ onChangeFilter, todosInfo }: TodoFiltersProps) =>
         type='button'
         variant='underline'
         color={'primary'}
-        onClick={() => {
-          onChangeFilter('completed');
-          setCurrentActive('completed');
-        }}
+        onClick={() => onChangeFilter('completed')}
       >
         Сделано ({todosInfo?.completed})
       </Button>
