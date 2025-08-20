@@ -1,0 +1,41 @@
+:root {
+  --color-primary: #1aabe2;
+  --color-dangerous: #DC2D2DFF
+}
+
+.button_primary{
+  background: var(--color-primary);
+}
+.button_dangerous{
+  background-color: var(--color-dangerous);;
+}
+.button_small{
+  width: 50px;
+  height: 50px;
+}
+.button_medium{
+  width: 100px;
+  height: 50px;
+}
+.button_large{
+  width: 120px;
+  height: 50px;
+}
+.button_classic {
+  color: white;
+  border-radius: 10px;
+}
+.button_active{
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.button_underline {
+  background-color: transparent;
+  &:hover {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
