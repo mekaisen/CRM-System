@@ -22,6 +22,8 @@ const rulesTitle: Rule[] = [
 ];
 
 export const TodoInput = ({ onUpdate }: TodoInputProps) => {
+  const [form] = Form.useForm();
+
   const onAddTodo: FormProps<FieldType>['onFinish'] = async (value) => {
     try {
       const serverTodo = await postTodo({ isDone: false, title: value.title });
@@ -29,6 +31,7 @@ export const TodoInput = ({ onUpdate }: TodoInputProps) => {
       if (serverTodo) {
         await onUpdate();
       }
+      form.resetFields();
     } catch (error) {
       console.error(error);
     }
@@ -46,7 +49,7 @@ export const TodoInput = ({ onUpdate }: TodoInputProps) => {
   // };
   return (
     <>
-      <Form className={`${styles.addTodo}`} onFinish={onAddTodo}>
+      <Form className={`${styles.addTodo}`} form={form} onFinish={onAddTodo}>
         <Form.Item<FieldType> className={styles.input_value} name='title' rules={rulesTitle}>
           <Input placeholder='Task To Be Done...' />
         </Form.Item>
