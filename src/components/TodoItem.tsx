@@ -2,7 +2,7 @@ import type { CheckboxChangeEvent, FormProps } from 'antd';
 import type { Rule } from 'rc-field-form/lib/interface';
 
 import { Button, Checkbox, Form, Input } from 'antd';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import type { Todo, TodoRequest } from '@/types/todos.ts';
 
@@ -30,7 +30,7 @@ const rulesTitle: Rule[] = [
 ];
 
 export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
-  const [todoEditTitle, setTodoEditTitle] = useState<string>('');
+  const todoEditTitle = useRef<string>('');
   const [isEdit, setIsEdit] = useState<boolean>(false);
 
   const changeTodo = async ({ isDone, title }: TodoRequest) => {
@@ -71,14 +71,14 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
   const onSaveTodo: FormProps<FieldType>['onFinish'] = (value) => {
     if (!value.title) return;
     saveTodo(value.title);
-    setTodoEditTitle(value.title);
+    todoEditTitle.current = value.title;
   };
   const onCancelSave = () => {
     setIsEdit(false);
   };
   const onEdit = () => {
     setIsEdit(true);
-    setTodoEditTitle(todo.title);
+    todoEditTitle.current = todo.title;
   };
   const onDelete = () => {
     removeTodo(todo);
@@ -97,7 +97,7 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
             <Form className={styles.title} onFinish={onSaveTodo}>
               <Form.Item<FieldType>
                 className={styles.input_value_edit}
-                initialValue={todoEditTitle}
+                initialValue={todoEditTitle.current}
                 name='title'
                 rules={rulesTitle}
               >
