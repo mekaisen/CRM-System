@@ -1,55 +1,54 @@
+import type { AxiosResponse } from 'axios';
+
+import axios from 'axios';
+
 import type { MetaResponse, Todo, TodoFilters, TodoInfo, TodoRequest } from '@/types/todos.ts';
 
 import { baseUrl } from '@/helpers/const/api.ts';
 
+const api = axios.create({ baseURL: baseUrl });
+
 export const putTodo = (todoRequest: TodoRequest, todoId: number): Promise<Todo> => {
-  return fetch(`${baseUrl}/todos/${todoId}`, {
-    method: 'PUT',
-    body: JSON.stringify(todoRequest),
-    headers: {
-      'Content-type': 'application/json'
-    }
-  })
-    .then((res) => res.json())
+  return api
+    .put<Todo>(`todos/${todoId}`, todoRequest)
+    .then((res) => res.data)
     .catch((error) => {
+      if (axios.isAxiosError(error)) {
+        throw error;
+      }
       throw new Error(error);
     });
 };
 
-export const deleteTodo = (todoId: number): Promise<Response> => {
-  return fetch(`${baseUrl}/todos/${todoId}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-type': 'application/json'
+export const deleteTodo = (todoId: number): Promise<AxiosResponse> => {
+  return api.delete(`todos/${todoId}`).catch((error) => {
+    if (axios.isAxiosError(error)) {
+      throw error;
     }
-  }).catch((error) => {
     throw new Error(error);
   });
 };
 
 export const getTodos = (filter: TodoFilters): Promise<MetaResponse<Todo, TodoInfo>> => {
-  return fetch(`${baseUrl}/todos?filter=${filter}`, {
-    method: 'GET',
-    headers: {
-      'Content-type': 'application/json'
-    }
-  })
-    .then((res) => res.json())
+  return api
+    .get<MetaResponse<Todo, TodoInfo>>(`todos`, { params: { filter } })
+    .then((res) => res.data)
     .catch((error) => {
+      if (axios.isAxiosError(error)) {
+        throw error;
+      }
       throw new Error(error);
     });
 };
 
 export const postTodo = (todoRequest: TodoRequest): Promise<Todo> => {
-  return fetch(`${baseUrl}/todos`, {
-    method: 'POST',
-    body: JSON.stringify(todoRequest),
-    headers: {
-      'Content-type': 'application/json'
-    }
-  })
-    .then((res) => res.json())
+  return api
+    .post<Todo>(`todos`, todoRequest)
+    .then((res) => res.data)
     .catch((error) => {
+      if (axios.isAxiosError(error)) {
+        throw error;
+      }
       throw new Error(error);
     });
 };
