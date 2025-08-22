@@ -1,3 +1,7 @@
+import type { CheckboxChangeEvent, FormProps } from 'antd';
+import type { Rule } from 'rc-field-form/lib/interface';
+
+import { Button, Checkbox, Form, Input } from 'antd';
 import { useState } from 'react';
 
 import type { Todo, TodoRequest } from '@/types/todos.ts';
@@ -7,8 +11,6 @@ import { IconCancel } from '@/assets/icons/IconCancel.tsx';
 import { IconEdit } from '@/assets/icons/IconEdit.tsx';
 import { IconSave } from '@/assets/icons/IconSave.tsx';
 import { IconTrash } from '@/assets/icons/IconTrash.tsx';
-import { Button } from '@/components/ui/Button.tsx';
-import { validateTitle } from '@/helpers/utils/validateTitle.ts';
 
 import styles from '@/pages/Todos/todo.module.css';
 
@@ -17,11 +19,19 @@ interface TodoItemProps {
   todo: Todo;
   onUpdateTodo: () => Promise<void>;
 }
+interface FieldType {
+  title?: string;
+}
+
+const rulesTitle: Rule[] = [
+  { required: true, message: 'Это поле не может быть пустым' },
+  { type: 'string', min: 2, message: 'Минимальная длина текста 2 символа' },
+  { type: 'string', max: 64, message: 'Максимальная длина текста 64 символа' }
+];
 
 export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
   const [todoEditTitle, setTodoEditTitle] = useState<string>('');
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [todoEditTitleError, setTodoEditTitleError] = useState<string>('');
 
   const changeTodo = async ({ isDone, title }: TodoRequest) => {
     try {
@@ -40,7 +50,7 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
     try {
       const serverTodo = await deleteTodo(todo.id);
 
-      if (serverTodo.ok) {
+      if (serverTodo.statusText === 'OK') {
         onUpdateTodo();
       }
     } catch (error) {
@@ -48,34 +58,23 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
     }
   };
   const saveTodo = (title: string) => {
-    const error = validateTitle(title);
-
-    if (error) {
-      setTodoEditTitleError(error);
-      return;
-    }
-
     setIsEdit(false);
 
     changeTodo({ title });
   };
 
-  const onChangeIsDone = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeIsDone = (e: CheckboxChangeEvent) => {
     const isDone = e.target.checked;
 
     changeTodo({ isDone });
   };
-  const onChangeTitle = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTodoEditTitleError(validateTitle(e.target.value));
-    setTodoEditTitle(e.target.value);
-  };
-
-  const onSaveTodo = () => {
-    saveTodo(todoEditTitle);
+  const onSaveTodo: FormProps<FieldType>['onFinish'] = (value) => {
+    if (!value.title) return;
+    saveTodo(value.title);
+    setTodoEditTitle(value.title);
   };
   const onCancelSave = () => {
     setIsEdit(false);
-    setTodoEditTitleError('');
   };
   const onEdit = () => {
     setIsEdit(true);
@@ -88,43 +87,41 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
     <>
       <li className={className}>
         <div className={styles.title}>
-          <input
+          <Checkbox
             checked={todo.isDone}
             id={todo.id.toString()}
             type='checkbox'
             onChange={onChangeIsDone}
           />
           {isEdit ? (
-            <form className={styles.title} onSubmit={onSaveTodo}>
-              {' '}
-              <textarea
-                className={styles.title_input}
-                id='inputTitle'
-                value={todoEditTitle}
-                onChange={onChangeTitle}
-              />
+            <Form className={styles.title} onFinish={onSaveTodo}>
+              <Form.Item<FieldType>
+                className={styles.input_value_edit}
+                initialValue={todoEditTitle}
+                name='title'
+                rules={rulesTitle}
+              >
+                <Input placeholder='Задача...' />
+              </Form.Item>
+
               <div className={styles.flex}>
                 <Button
-                  className={styles.button_black}
-                  size={'small'}
-                  type='submit'
-                  variant='classic'
-                  color={'primary'}
-                >
-                  <IconSave className={styles.svg} />
-                </Button>
-
+                  htmlType='submit'
+                  size='large'
+                  variant='solid'
+                  color='primary'
+                  icon={<IconSave />}
+                ></Button>
                 <Button
-                  size='small'
-                  type='button'
-                  variant='classic'
-                  color={'dangerous'}
+                  htmlType='button'
+                  size='large'
+                  variant='solid'
+                  color='danger'
+                  icon={<IconCancel />}
                   onClick={onCancelSave}
-                >
-                  <IconCancel className={styles.svg} />
-                </Button>
+                ></Button>
               </div>
-            </form>
+            </Form>
           ) : (
             <>
               <label
@@ -135,34 +132,27 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
               </label>
               <div className={styles.flex}>
                 <Button
-                  className={`${styles.edit_button} ${styles.button_blue}`}
-                  size={'small'}
-                  type='button'
+                  htmlType='button'
+                  size='large'
+                  variant='solid'
                   color={'primary'}
+                  icon={<IconEdit />}
                   onClick={onEdit}
-                >
-                  <IconEdit className={styles.svg} />
-                </Button>
+                ></Button>
 
                 <Button
-                  className={`${styles.edit_button} ${styles.button_red}`}
-                  size={'small'}
-                  type='button'
-                  color={'dangerous'}
+                  htmlType='button'
+                  size='large'
+                  variant='solid'
+                  color='danger'
+                  icon={<IconTrash />}
                   onClick={onDelete}
-                >
-                  <IconTrash className={styles.svg} />
-                </Button>
+                ></Button>
               </div>
             </>
           )}
         </div>
       </li>
-      {!!todoEditTitleError && (
-        <label className='absolute error_message' htmlFor='inputTitle'>
-          {todoEditTitleError}
-        </label>
-      )}
     </>
   );
 };
