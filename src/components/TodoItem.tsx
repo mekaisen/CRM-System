@@ -58,8 +58,6 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
     }
   };
   const saveTodo = (title: string) => {
-    setIsEdit(false);
-
     changeTodo({ title });
   };
 
@@ -72,6 +70,7 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
     if (!value.title) return;
     saveTodo(value.title);
     todoEditTitle.current = value.title;
+    setIsEdit(false);
   };
   const onCancelSave = () => {
     setIsEdit(false);

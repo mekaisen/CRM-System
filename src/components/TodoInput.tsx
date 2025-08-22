@@ -2,6 +2,7 @@ import type { FormProps } from 'antd';
 import type { Rule } from 'rc-field-form/lib/interface';
 
 import { Button, Form, Input } from 'antd';
+import { useState } from 'react';
 
 import { postTodo } from '@/api/todos.ts';
 
@@ -22,14 +23,19 @@ const rulesTitle: Rule[] = [
 ];
 
 export const TodoInput = ({ onUpdate }: TodoInputProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const [form] = Form.useForm();
 
   const onAddTodo: FormProps<FieldType>['onFinish'] = async (value) => {
     try {
+      setIsLoading(true);
+
       const serverTodo = await postTodo({ isDone: false, title: value.title });
 
       if (serverTodo) {
         await onUpdate();
+        setIsLoading(false);
       }
       form.resetFields();
     } catch (error) {
@@ -55,6 +61,7 @@ export const TodoInput = ({ onUpdate }: TodoInputProps) => {
         </Form.Item>
         <Button
           className={styles.button_input}
+          disabled={isLoading}
           htmlType='submit'
           size='large'
           variant='solid'
