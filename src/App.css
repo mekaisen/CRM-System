@@ -4,23 +4,27 @@ body {
   margin: 0;
 }
 
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f0f0f0;
-}
+/*body {*/
+/*  display: flex;*/
+/*  justify-content: center;*/
+/*  align-items: center;*/
+/*  background: #f0f0f0;*/
+/*}*/
 
-#root {
-  max-width: 520px;
-  width: 100%;
-  padding: 20px;
-  min-height: 300px;
-  max-height: 764px;
-  text-align: center;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+/*#root {*/
+/*  max-width: 520px;*/
+/*  width: 100%;*/
+/*  padding: 20px;*/
+/*  min-height: 300px;*/
+/*  max-height: 764px;*/
+/*  text-align: center;*/
+/*  border-radius: 10px;*/
+/*  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);*/
+/*  overflow: hidden;*/
+/*}*/
+
+.ant-layout-content{
+  margin: 16px 250px
 }
 .error_message {
   color: red;
