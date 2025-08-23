@@ -43,9 +43,6 @@
   width: 100%;
   flex-basis: 70%;
 
-  & input {
-    width: 100%;
-  }
 }
 .button_input{
   flex-basis: 30%;
