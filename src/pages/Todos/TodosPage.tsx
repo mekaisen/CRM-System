@@ -42,8 +42,14 @@ export const TodosPage = () => {
   };
 
   useEffect(() => {
-    getAllTodoAndSave('all');
-  }, []);
+    getAllTodoAndSave(todosFilter);
+
+    const timer = setInterval(() => {
+      getAllTodoAndSave(todosFilter);
+      // console.log(`timer ${todosFilter}`);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [todosFilter]);
 
   return (
     <>
