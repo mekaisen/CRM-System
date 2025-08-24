@@ -5,11 +5,25 @@ import { Layout, Menu } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
 import { useState } from 'react';
-import { createBrowserRouter, Link, Outlet } from 'react-router';
+import { createBrowserRouter, Link, Outlet, useLocation } from 'react-router';
 
 import { TodosPage } from '@/pages/Todos/TodosPage.tsx';
 
 import './App.css';
+
+const getCurrentLocationNumber = (location: string) => {
+  switch (location) {
+    case '/': {
+      return '1';
+    }
+    case '/profile': {
+      return '2';
+    }
+    default: {
+      return '1';
+    }
+  }
+};
 
 type MenuItem = GetProp<MenuProps, 'items'>[number];
 const items: MenuItem[] = [
@@ -24,8 +38,10 @@ const items: MenuItem[] = [
     label: <Link to='/profile'>Profile</Link>
   }
 ];
-const App = () => {
-  const [isOpen, setIsopen] = useState<boolean>(false);
+
+export const App = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const location = useLocation();
 
   return (
     <>
@@ -34,9 +50,14 @@ const App = () => {
           breakpoint={'md'}
           collapsed={isOpen}
           collapsible
-          onCollapse={(value) => setIsopen(value)}
+          onCollapse={(value) => setIsOpen(value)}
         >
-          <Menu defaultSelectedKeys={['1']} items={items} theme='dark' mode='inline' />
+          <Menu
+            defaultSelectedKeys={[getCurrentLocationNumber(location.pathname)]}
+            items={items}
+            theme='dark'
+            mode='inline'
+          />
         </Sider>
         <Layout>
           <Content>
@@ -62,5 +83,3 @@ export const router = createBrowserRouter([
     ]
   }
 ]);
-
-export default App;

@@ -32,7 +32,7 @@ const rulesTitle: Rule[] = [
 export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
   const todoEditTitle = useRef<string>('');
   const [isEdit, setIsEdit] = useState<boolean>(false);
-
+  console.log('render item');
   const changeTodo = async ({ isDone, title }: TodoRequest) => {
     try {
       const serverTodo = await putTodo({ isDone, title }, todo.id);
