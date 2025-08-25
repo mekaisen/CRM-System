@@ -36,11 +36,10 @@ export const TodosPage = () => {
   useEffect(() => {
     getAllTodoAndSave(todosFilter);
 
-    // const timer = setInterval(() => {
-    //   getAllTodoAndSave(todosFilter);
-    //   // console.log(`timer ${todosFilter}`);
-    // }, 5000);
-    // return () => clearInterval(timer);
+    const timer = setInterval(() => {
+      getAllTodoAndSave(todosFilter);
+    }, 5000);
+    return () => clearInterval(timer);
   }, [todosFilter]);
 
   return (
