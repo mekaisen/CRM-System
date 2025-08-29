@@ -1,8 +1,7 @@
 import type { CheckboxChangeEvent, FormProps } from 'antd';
-import type { Rule } from 'rc-field-form/lib/interface';
 
 import { Button, Checkbox, Form, Input } from 'antd';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import type { Todo, TodoRequest } from '@/types/todos.ts';
 
@@ -11,6 +10,7 @@ import { IconCancel } from '@/assets/icons/IconCancel.tsx';
 import { IconEdit } from '@/assets/icons/IconEdit.tsx';
 import { IconSave } from '@/assets/icons/IconSave.tsx';
 import { IconTrash } from '@/assets/icons/IconTrash.tsx';
+import { rulesTitle } from '@/helpers/validationRules.ts';
 
 import styles from '@/pages/Todos/todo.module.css';
 
@@ -20,45 +20,31 @@ interface TodoItemProps {
   onUpdateTodo: () => Promise<void>;
 }
 interface FieldType {
-  title?: string;
+  title: string;
 }
 
-const rulesTitle: Rule[] = [
-  { required: true, message: 'Это поле не может быть пустым' },
-  { type: 'string', min: 2, message: 'Минимальная длина текста 2 символа' },
-  { type: 'string', max: 64, message: 'Максимальная длина текста 64 символа' }
-];
-
 export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
-  const todoEditTitle = useRef<string>('');
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  console.log('render item');
+
   const changeTodo = async ({ isDone, title }: TodoRequest) => {
     try {
-      const serverTodo = await putTodo({ isDone, title }, todo.id);
-
-      if (serverTodo) {
-        onUpdateTodo();
-      }
+      await putTodo({ isDone, title }, todo.id);
+      await onUpdateTodo();
     } catch (error) {
-      if (!(error instanceof Error)) return;
+      if (!(error instanceof Error)) throw new Error('Ошибка изменения туду');
 
       console.error(error);
     }
   };
   const removeTodo = async (todo: Todo) => {
     try {
-      const serverTodo = await deleteTodo(todo.id);
-
-      if (serverTodo.statusText === 'OK') {
-        onUpdateTodo();
-      }
+      await deleteTodo(todo.id);
+      await onUpdateTodo();
     } catch (error) {
+      if (!(error instanceof Error)) throw new Error('Ошибка удаления туду');
+
       console.error(error);
     }
-  };
-  const saveTodo = (title: string) => {
-    changeTodo({ title });
   };
 
   const onChangeIsDone = (e: CheckboxChangeEvent) => {
@@ -67,9 +53,8 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
     changeTodo({ isDone });
   };
   const onSaveTodo: FormProps<FieldType>['onFinish'] = (value) => {
-    if (!value.title) return;
-    saveTodo(value.title);
-    todoEditTitle.current = value.title;
+    changeTodo({ title: value.title });
+
     setIsEdit(false);
   };
   const onCancelSave = () => {
@@ -77,7 +62,6 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
   };
   const onEdit = () => {
     setIsEdit(true);
-    todoEditTitle.current = todo.title;
   };
   const onDelete = () => {
     removeTodo(todo);
@@ -88,7 +72,7 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
         <div className={styles.title}>
           <Checkbox
             checked={todo.isDone}
-            id={todo.id.toString()}
+            id={`todo-input-title-${todo.id}`}
             type='checkbox'
             onChange={onChangeIsDone}
           />
@@ -96,7 +80,7 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
             <Form className={styles.title} onFinish={onSaveTodo}>
               <Form.Item<FieldType>
                 className={styles.input_value_edit}
-                initialValue={todoEditTitle.current}
+                initialValue={todo.title}
                 name='title'
                 rules={rulesTitle}
               >
@@ -125,7 +109,7 @@ export const TodoItem = ({ todo, className, onUpdateTodo }: TodoItemProps) => {
             <>
               <label
                 className={`${todo.isDone && styles.title_line} ${styles.title_text}`}
-                htmlFor={todo.id.toString()}
+                htmlFor={`todo-input-title-${todo.id}`}
               >
                 {todo.title}
               </label>

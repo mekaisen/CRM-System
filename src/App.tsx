@@ -11,29 +11,15 @@ import { TodosPage } from '@/pages/Todos/TodosPage.tsx';
 
 import './App.css';
 
-const getCurrentLocationNumber = (location: string) => {
-  switch (location) {
-    case '/': {
-      return '1';
-    }
-    case '/profile': {
-      return '2';
-    }
-    default: {
-      return '1';
-    }
-  }
-};
-
 type MenuItem = GetProp<MenuProps, 'items'>[number];
 const items: MenuItem[] = [
   {
-    key: '1',
+    key: '/todos',
     icon: <UnorderedListOutlined />,
-    label: <Link to='/'>Todo</Link>
+    label: <Link to='/todos'>Todo</Link>
   },
   {
-    key: '2',
+    key: '/profile',
     icon: <UserOutlined />,
     label: <Link to='/profile'>Profile</Link>
   }
@@ -53,7 +39,7 @@ export const App = () => {
           onCollapse={(value) => setIsOpen(value)}
         >
           <Menu
-            defaultSelectedKeys={[getCurrentLocationNumber(location.pathname)]}
+            defaultSelectedKeys={[location.pathname]}
             items={items}
             theme='dark'
             mode='inline'
@@ -75,7 +61,7 @@ export const router = createBrowserRouter([
     Component: App,
 
     children: [
-      { index: true, Component: TodosPage },
+      { path: '/todos', Component: TodosPage },
       {
         path: '/profile',
         element: <div>Profile</div>

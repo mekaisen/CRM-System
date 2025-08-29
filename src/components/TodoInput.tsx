@@ -1,10 +1,10 @@
 import type { FormProps } from 'antd';
-import type { Rule } from 'rc-field-form/lib/interface';
 
 import { Button, Form, Input } from 'antd';
 import { useState } from 'react';
 
 import { postTodo } from '@/api/todos.ts';
+import { rulesTitle } from '@/helpers/validationRules.ts';
 
 import styles from '@/pages/Todos/todo.module.css';
 
@@ -13,14 +13,8 @@ interface TodoInputProps {
 }
 
 interface FieldType {
-  title?: string;
+  title: string;
 }
-
-const rulesTitle: Rule[] = [
-  { required: true, message: 'Это поле не может быть пустым' },
-  { type: 'string', min: 2, message: 'Минимальная длина текста 2 символа' },
-  { type: 'string', max: 64, message: 'Максимальная длина текста 64 символа' }
-];
 
 export const TodoInput = ({ onUpdate }: TodoInputProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -31,12 +25,11 @@ export const TodoInput = ({ onUpdate }: TodoInputProps) => {
     try {
       setIsLoading(true);
 
-      const serverTodo = await postTodo({ isDone: false, title: value.title });
+      await postTodo({ isDone: false, title: value.title });
 
-      if (serverTodo) {
-        await onUpdate();
-        setIsLoading(false);
-      }
+      await onUpdate();
+      setIsLoading(false);
+
       form.resetFields();
     } catch (error) {
       console.error(error);

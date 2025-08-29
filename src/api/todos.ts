@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import type { MetaResponse, Todo, TodoFilters, TodoInfo, TodoRequest } from '@/types/todos.ts';
 
-import { baseUrl } from '@/helpers/const/api.ts';
+export const baseUrl = 'https://easydev.club/api/v1';
 
 const api = axios.create({ baseURL: baseUrl });
 
