@@ -64,7 +64,7 @@ export const router = createBrowserRouter([
       {
         index: true,
         loader() {
-          redirect('/todos');
+          return redirect('/todos');
         }
       },
       { path: '/todos', Component: TodosPage },
