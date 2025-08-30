@@ -5,7 +5,7 @@ import { Layout, Menu } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
 import { useState } from 'react';
-import { createBrowserRouter, Link, Outlet, useLocation } from 'react-router';
+import { createBrowserRouter, Link, Outlet, redirect, useLocation } from 'react-router';
 
 import { TodosPage } from '@/pages/Todos/TodosPage.tsx';
 
@@ -61,6 +61,12 @@ export const router = createBrowserRouter([
     Component: App,
 
     children: [
+      {
+        index: true,
+        loader() {
+          redirect('/todos');
+        }
+      },
       { path: '/todos', Component: TodosPage },
       {
         path: '/profile',
