@@ -1,7 +1,7 @@
 /* Reset and base styles  */
 * {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   border: none;
 }
 
@@ -131,3 +131,11 @@ a {
 a:hover {
   color: #535bf2;
 }
+/*.ant-menu-item-icon{*/
+
+
+/*}*/
+/*.ant-menu-item{*/
+/*  display: flex;*/
+/*  align-items: center;*/
+/*}*/

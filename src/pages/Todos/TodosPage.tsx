@@ -13,7 +13,6 @@ export const TodosPage = () => {
   const [todosFilter, setTodosFilter] = useState<TodoFilters>('all');
 
   const onChangeFilter = (filter: TodoFilters) => {
-    getAllTodoAndSave(filter);
     setTodosFilter(filter);
   };
 
@@ -31,19 +30,17 @@ export const TodosPage = () => {
       setAllTodos(res.data);
     } catch (error) {
       console.error(error);
-
-      // if (error instanceof Error) throw error;
-      //
-      // throw new Error(String(error));
-
-      //Вопрос: делать обработку ошибки тут или прокидывать ошибку ниже и обрабатывать везде
-      // отдельно
     }
   };
 
   useEffect(() => {
-    getAllTodoAndSave('all');
-  }, []);
+    getAllTodoAndSave(todosFilter);
+
+    const timer = setInterval(() => {
+      getAllTodoAndSave(todosFilter);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [todosFilter]);
 
   return (
     <>

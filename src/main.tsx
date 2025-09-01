@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router';
+import '@ant-design/v5-patch-for-react-19';
 
 import { router } from './App.tsx';
 
