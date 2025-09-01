@@ -1,35 +1,77 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import type { GetProp, MenuProps } from 'antd';
 
-function App() {
-  const [count, setCount] = useState(0)
+import { UnorderedListOutlined, UserOutlined } from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
+import { Content } from 'antd/es/layout/layout';
+import Sider from 'antd/es/layout/Sider';
+import { useState } from 'react';
+import { createBrowserRouter, Link, Outlet, redirect, useLocation } from 'react-router';
+
+import { TodosPage } from '@/pages/Todos/TodosPage.tsx';
+
+import './App.css';
+
+type MenuItem = GetProp<MenuProps, 'items'>[number];
+const items: MenuItem[] = [
+  {
+    key: '/todos',
+    icon: <UnorderedListOutlined />,
+    label: <Link to='/todos'>Todo</Link>
+  },
+  {
+    key: '/profile',
+    icon: <UserOutlined />,
+    label: <Link to='/profile'>Profile</Link>
+  }
+];
+
+export const App = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const location = useLocation();
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Layout style={{ minHeight: '100vh' }}>
+        <Sider
+          breakpoint={'md'}
+          collapsed={isOpen}
+          collapsible
+          onCollapse={(value) => setIsOpen(value)}
+        >
+          <Menu
+            defaultSelectedKeys={[location.pathname]}
+            items={items}
+            theme='dark'
+            mode='inline'
+          />
+        </Sider>
+        <Layout>
+          <Content>
+            <Outlet />
+          </Content>
+        </Layout>
+      </Layout>
     </>
-  )
-}
+  );
+};
 
-export default App
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    Component: App,
+
+    children: [
+      {
+        index: true,
+        loader() {
+          return redirect('/todos');
+        }
+      },
+      { path: '/todos', Component: TodosPage },
+      {
+        path: '/profile',
+        element: <div>Profile</div>
+      }
+    ]
+  }
+]);
