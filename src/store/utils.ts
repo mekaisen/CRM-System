@@ -6,7 +6,7 @@ export interface IAsyncParticle<T> {
   status: 'fulfilled' | 'idle' | 'pending' | 'rejected';
 }
 
-export const initAsyncParticle = <T extends unknown>(data: T | null = null): IAsyncParticle<T> => ({
+export const initAsyncParticle = <T>(data: T | null = null): IAsyncParticle<T> => ({
   data,
   error: null,
   status: 'idle'
@@ -35,7 +35,7 @@ export const getAsyncRequestData = <T>(
   error: stateParam?.error,
   status: getAsyncDataStatus(stateParam)
 });
-export const addAsyncBuilderCases = <TState, RQ, RS>(
+export const addAsyncBuilderCases = <TState, RS, RQ>(
   builder: ActionReducerMapBuilder<TState>,
   sliceMethod: AsyncThunk<RS, RQ, { rejectValue: string }>,
   key: keyof TState

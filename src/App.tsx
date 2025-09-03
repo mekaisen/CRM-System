@@ -89,6 +89,7 @@ export const App = () => {
 // };
 
 const protectedLoader = async () => {
+  console.log('render');
   const isAuth = store.getState().auth.isAuth;
   if (!isAuth) {
     const refreshToken = refreshTokenService.getRefreshToken();
@@ -109,6 +110,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     loader: protectedLoader,
+    shouldRevalidate: () => true,
     children: [
       {
         path: '/',
