@@ -7,7 +7,12 @@ import Sider from 'antd/es/layout/Sider';
 import { useState } from 'react';
 import { createBrowserRouter, Link, Outlet, redirect, useLocation } from 'react-router';
 
+import { ProfilePage } from '@/pages/Profile/ProfilePage.tsx';
+import { SignInPage } from '@/pages/SignIn/SignInPage.tsx';
+import { SignUpPage } from '@/pages/SignUp/SignUpPage.tsx';
 import { TodosPage } from '@/pages/Todos/TodosPage.tsx';
+import { refreshAccessToken } from '@/store/slices/authSlice.ts';
+import { store } from '@/store/store.ts';
 
 import './App.css';
 
@@ -28,7 +33,6 @@ const items: MenuItem[] = [
 export const App = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const location = useLocation();
-
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
@@ -55,23 +59,74 @@ export const App = () => {
   );
 };
 
+// const ProtectedRoute = () => {
+//   const isAuth = useAppSelector(selectAuthIsAuth);
+//   const dispatch = useAppDispatch();
+//   const navigate = useNavigate();
+//   console.log('ProtectedRoute');
+//   useEffect(() => {
+//     console.log('useEffect', 'ProtectedRoute');
+//     const checkAuth = async () => {
+//       if (!isAuth) {
+//         const refreshToken = localStorage.getItem('refreshtoken');
+//         if (!refreshToken) {
+//           navigate('/signin');
+//           return;
+//         }
+//         try {
+//           await dispatch(refreshAccessToken({ refreshToken })).unwrap();
+//         } catch {
+//           navigate('/signin');
+//         }
+//       }
+//     };
+//
+//     checkAuth();
+//   }, []);
+//
+//   return <Outlet />;
+// };
+
+const protectedLoader = async () => {
+  const isAuth = store.getState().auth.isAuth;
+  if (!isAuth) {
+    const refreshToken = localStorage.getItem('refreshtoken');
+    if (!refreshToken) {
+      return redirect('/signin');
+    }
+    try {
+      await store.dispatch(refreshAccessToken({ refreshToken })).unwrap();
+    } catch {
+      return redirect('/signin');
+    }
+  }
+};
+
 export const router = createBrowserRouter([
   {
     path: '/',
-    Component: App,
-
+    loader: protectedLoader,
     children: [
       {
-        index: true,
-        loader() {
-          return redirect('/todos');
-        }
-      },
-      { path: '/todos', Component: TodosPage },
-      {
-        path: '/profile',
-        element: <div>Profile</div>
+        path: '/',
+        Component: App,
+        children: [
+          {
+            index: true,
+            Component: App,
+            loader() {
+              return redirect('/todos');
+            }
+          },
+          { path: '/todos', Component: TodosPage },
+          {
+            path: '/profile',
+            Component: ProfilePage
+          }
+        ]
       }
     ]
-  }
+  },
+  { path: '/signup', Component: SignUpPage },
+  { path: '/signin', Component: SignInPage }
 ]);
