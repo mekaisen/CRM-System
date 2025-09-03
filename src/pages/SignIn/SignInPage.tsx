@@ -3,6 +3,7 @@ import type { FormProps } from 'antd';
 import { Button, Flex, Form, Input, Layout, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router';
 
+import { utilsTokens } from '@/helpers/tokenService.ts';
 import { selectAuthLogin } from '@/store/selectors.ts';
 import { login } from '@/store/slices/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '@/store/store.ts';
@@ -22,8 +23,14 @@ export const SignInPage = () => {
   const { error, status } = useAppSelector(selectAuthLogin);
 
   const onFinish: FormProps<SignInValues>['onFinish'] = async (value) => {
-    await dispatch(login(value)).unwrap();
-    navigate('/');
+    try {
+      const tokens = await dispatch(login(value)).unwrap();
+      utilsTokens.setTokens(tokens);
+      navigate('/');
+    } catch (e) {
+      utilsTokens.removeTokens();
+      console.log(e);
+    }
   };
   return (
     <Layout style={{ height: '100vh', alignItems: 'center', justifyContent: 'center' }}>

@@ -2,6 +2,7 @@ import { Button, Flex, Typography } from 'antd';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
+import { utilsTokens } from '@/helpers/tokenService.ts';
 import { selectAuthIsAuth, selectAuthProfile } from '@/store/selectors.ts';
 import { getProfile, logoutUser } from '@/store/slices/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '@/store/store.ts';
@@ -25,6 +26,7 @@ export const ProfilePage = () => {
 
   const onLogout = async () => {
     await dispatch(logoutUser()).unwrap();
+    utilsTokens.removeTokens();
     navigate('/signin');
   };
 

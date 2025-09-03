@@ -5,7 +5,6 @@ import type { IAsyncParticle } from '@/store/utils.ts';
 import type { AuthData, Profile, RefreshToken, Token, UserRegistration } from '@/types/auth';
 
 import { fetchProfile, loguot, refresh, signin, signup } from '@/api/auth.ts';
-import { tokenService } from '@/helpers/tokenService.ts';
 import { addAsyncBuilderCases, initAsyncParticle } from '@/store/utils.ts';
 
 export interface IAuthStore {
@@ -134,8 +133,6 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.login.status = 'fulfilled';
         state.login.error = '';
-        tokenService.setToken(action.payload.accessToken);
-        localStorage.setItem('refreshtoken', action.payload.refreshToken);
         state.isAuth = true;
         state.login.data = action.payload;
       })
@@ -146,22 +143,16 @@ const authSlice = createSlice({
       })
       .addCase(refreshAccessToken.fulfilled, (state, action) => {
         state.login.status = 'fulfilled';
-        tokenService.setToken(action.payload.accessToken);
-        localStorage.setItem('refreshtoken', action.payload.refreshToken);
         state.isAuth = true;
         state.login.data = action.payload;
       })
       .addCase(refreshAccessToken.rejected, (state, action) => {
         state.login.status = 'rejected';
         state.isAuth = false;
-        tokenService.removeToken();
-        localStorage.removeItem('refreshtoken');
         state.login.error = action.payload;
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.isAuth = false;
-        tokenService.removeToken();
-        localStorage.removeItem('refreshtoken');
       });
   }
 });

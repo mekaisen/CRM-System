@@ -7,6 +7,7 @@ import Sider from 'antd/es/layout/Sider';
 import { useState } from 'react';
 import { createBrowserRouter, Link, Outlet, redirect, useLocation } from 'react-router';
 
+import { refreshTokenService, utilsTokens } from '@/helpers/tokenService.ts';
 import { ProfilePage } from '@/pages/Profile/ProfilePage.tsx';
 import { SignInPage } from '@/pages/SignIn/SignInPage.tsx';
 import { SignUpPage } from '@/pages/SignUp/SignUpPage.tsx';
@@ -90,13 +91,15 @@ export const App = () => {
 const protectedLoader = async () => {
   const isAuth = store.getState().auth.isAuth;
   if (!isAuth) {
-    const refreshToken = localStorage.getItem('refreshtoken');
+    const refreshToken = refreshTokenService.getRefreshToken();
     if (!refreshToken) {
       return redirect('/signin');
     }
     try {
-      await store.dispatch(refreshAccessToken({ refreshToken })).unwrap();
+      const tokens = await store.dispatch(refreshAccessToken({ refreshToken })).unwrap();
+      utilsTokens.setTokens(tokens);
     } catch {
+      utilsTokens.removeTokens();
       return redirect('/signin');
     }
   }

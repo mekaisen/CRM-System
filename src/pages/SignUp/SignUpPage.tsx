@@ -26,7 +26,6 @@ export const SignUpPage = () => {
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (value) => {
     await dispatch(registration(value)).unwrap();
-
     navigate('/signin');
   };
   return (
