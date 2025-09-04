@@ -10,6 +10,7 @@ import { addAsyncBuilderCases, initAsyncParticle } from '@/store/utils.ts';
 export interface IAuthStore {
   authTokens: IAsyncParticle<Token>;
   isAuth: boolean;
+  isSuccessRegistration: boolean;
   logout: IAsyncParticle<undefined>;
   profile: IAsyncParticle<Profile>;
   registration: IAsyncParticle<Profile>;
@@ -17,6 +18,7 @@ export interface IAuthStore {
 
 const initialState: IAuthStore = {
   isAuth: false,
+  isSuccessRegistration: false,
   logout: initAsyncParticle(),
   registration: initAsyncParticle(),
   profile: initAsyncParticle(),
@@ -123,6 +125,9 @@ const authSlice = createSlice({
   reducers: {
     setIsAuth(state, action) {
       state.isAuth = action.payload;
+    },
+    setIsSuccessRegistration(state, action) {
+      state.isSuccessRegistration = action.payload;
     }
   },
   extraReducers: (builder) => {
