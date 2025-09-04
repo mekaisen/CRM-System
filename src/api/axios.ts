@@ -38,6 +38,7 @@ api.interceptors.response.use(
 
           if (!refreshToken) {
             store.dispatch(authActions.setIsAuth(false));
+            utilsTokens.removeTokens();
             return Promise.reject(error);
           }
 
@@ -55,8 +56,9 @@ api.interceptors.response.use(
           isRefreshing = false;
         }
       } else {
-        throw error;
+        return Promise.reject(error);
       }
     }
+    return Promise.reject(error);
   }
 );
