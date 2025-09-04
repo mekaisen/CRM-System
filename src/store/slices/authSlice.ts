@@ -10,12 +10,14 @@ import { addAsyncBuilderCases, initAsyncParticle } from '@/store/utils.ts';
 export interface IAuthStore {
   authTokens: IAsyncParticle<Token>;
   isAuth: boolean;
+  logout: IAsyncParticle<undefined>;
   profile: IAsyncParticle<Profile>;
   registration: IAsyncParticle<Profile>;
 }
 
 const initialState: IAuthStore = {
   isAuth: false,
+  logout: initAsyncParticle(),
   registration: initAsyncParticle(),
   profile: initAsyncParticle(),
   authTokens: initAsyncParticle()
@@ -128,7 +130,7 @@ const authSlice = createSlice({
     addAsyncBuilderCases(builder, getProfile, 'profile');
     addAsyncBuilderCases(builder, login, 'authTokens');
     addAsyncBuilderCases(builder, refreshAccessToken, 'authTokens');
-    builder.addCase(logoutUser.fulfilled, () => {});
+    addAsyncBuilderCases(builder, logoutUser, 'logout');
   }
 });
 
