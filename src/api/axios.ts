@@ -48,10 +48,11 @@ api.interceptors.response.use(
           config.headers.Authorization = `Bearer ${tokens.accessToken}`;
 
           return api(config);
-        } catch {
+        } catch (e) {
           utilsTokens.removeTokens();
 
           store.dispatch(authActions.setIsAuth(false));
+          return Promise.reject(e);
         } finally {
           isRefreshing = false;
         }
