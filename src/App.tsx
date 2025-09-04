@@ -4,16 +4,24 @@ import { UnorderedListOutlined, UserOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import Sider from 'antd/es/layout/Sider';
-import { useState } from 'react';
-import { createBrowserRouter, Link, Outlet, redirect, useLocation } from 'react-router';
+import { useEffect, useState } from 'react';
+import {
+  createBrowserRouter,
+  Link,
+  Outlet,
+  redirect,
+  useLocation,
+  useNavigate
+} from 'react-router';
 
-import { refreshTokenService, utilsTokens } from '@/helpers/tokenService.ts';
+import { utilsTokens } from '@/helpers/tokenService.ts';
 import { ProfilePage } from '@/pages/Profile/ProfilePage.tsx';
 import { SignInPage } from '@/pages/SignIn/SignInPage.tsx';
 import { SignUpPage } from '@/pages/SignUp/SignUpPage.tsx';
 import { TodosPage } from '@/pages/Todos/TodosPage.tsx';
-import { refreshAccessToken } from '@/store/slices/authSlice.ts';
-import { store } from '@/store/store.ts';
+import { selectAuthIsAuth } from '@/store/selectors.ts';
+import { authActions, refreshAccessToken } from '@/store/slices/authSlice.ts';
+import { useAppDispatch, useAppSelector } from '@/store/store.ts';
 
 import './App.css';
 
@@ -60,56 +68,61 @@ export const App = () => {
   );
 };
 
-// const ProtectedRoute = () => {
-//   const isAuth = useAppSelector(selectAuthIsAuth);
-//   const dispatch = useAppDispatch();
-//   const navigate = useNavigate();
-//   console.log('ProtectedRoute');
-//   useEffect(() => {
-//     console.log('useEffect', 'ProtectedRoute');
-//     const checkAuth = async () => {
-//       if (!isAuth) {
-//         const refreshToken = localStorage.getItem('refreshtoken');
-//         if (!refreshToken) {
-//           navigate('/signin');
-//           return;
-//         }
-//         try {
-//           await dispatch(refreshAccessToken({ refreshToken })).unwrap();
-//         } catch {
-//           navigate('/signin');
-//         }
-//       }
-//     };
-//
-//     checkAuth();
-//   }, []);
-//
-//   return <Outlet />;
-// };
+const ProtectedRoute = () => {
+  const isAuth = useAppSelector(selectAuthIsAuth);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (!isAuth) {
+        const refreshToken = localStorage.getItem('refreshtoken');
+        if (!refreshToken) {
+          navigate('/signin');
+          return;
+        }
+        try {
+          const tokens = await dispatch(refreshAccessToken({ refreshToken })).unwrap();
+          utilsTokens.setTokens(tokens);
+          dispatch(authActions.setIsAuth(true));
+        } catch {
+          utilsTokens.removeTokens();
+          dispatch(authActions.setIsAuth(false));
+          navigate('/signin');
+        }
+      }
+    };
 
-const protectedLoader = async () => {
-  console.log('render');
-  const isAuth = store.getState().auth.isAuth;
+    checkAuth();
+  }, [isAuth]);
   if (!isAuth) {
-    const refreshToken = refreshTokenService.getRefreshToken();
-    if (!refreshToken) {
-      return redirect('/signin');
-    }
-    try {
-      const tokens = await store.dispatch(refreshAccessToken({ refreshToken })).unwrap();
-      utilsTokens.setTokens(tokens);
-    } catch {
-      utilsTokens.removeTokens();
-      return redirect('/signin');
-    }
+    return null;
   }
+  return <Outlet />;
 };
+
+// const protectedLoader = async () => {
+//   console.log('render');
+//   const isAuth = store.getState().auth.isAuth;
+//   if (!isAuth) {
+//     const refreshToken = refreshTokenService.getRefreshToken();
+//     if (!refreshToken) {
+//       return redirect('/signin');
+//     }
+//     try {
+//       const tokens = await store.dispatch(refreshAccessToken({ refreshToken })).unwrap();
+//       utilsTokens.setTokens(tokens);
+//     } catch {
+//       utilsTokens.removeTokens();
+//       return redirect('/signin');
+//     }
+//   }
+// };
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    loader: protectedLoader,
+    // loader: protectedLoader,
+    Component: ProtectedRoute,
     shouldRevalidate: () => true,
     children: [
       {

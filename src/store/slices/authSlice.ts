@@ -8,8 +8,8 @@ import { fetchProfile, loguot, refresh, signin, signup } from '@/api/auth.ts';
 import { addAsyncBuilderCases, initAsyncParticle } from '@/store/utils.ts';
 
 export interface IAuthStore {
+  authTokens: IAsyncParticle<Token>;
   isAuth: boolean;
-  login: IAsyncParticle<Token>;
   profile: IAsyncParticle<Profile>;
   registration: IAsyncParticle<Profile>;
 }
@@ -18,7 +18,7 @@ const initialState: IAuthStore = {
   isAuth: false,
   registration: initAsyncParticle(),
   profile: initAsyncParticle(),
-  login: initAsyncParticle()
+  authTokens: initAsyncParticle()
 };
 
 const errorsForSignin: Record<any, string> = {
@@ -59,7 +59,6 @@ export const login = createAsyncThunk<Token, AuthData, { rejectValue: string }>(
     try {
       return await signin(arg);
     } catch (e) {
-      console.log(e);
       const errorMessage = getErrorMessage(e, errorsForSignin);
       return rejectWithValue(errorMessage);
     }
@@ -72,7 +71,6 @@ export const registration = createAsyncThunk<Profile, UserRegistration, { reject
     try {
       return await signup(arg);
     } catch (e) {
-      console.log(e);
       const errorMessage = getErrorMessage(e, errorsForSignUp);
       return rejectWithValue(errorMessage);
     }
@@ -97,7 +95,6 @@ export const getProfile = createAsyncThunk<Profile, undefined, { rejectValue: st
     try {
       return await fetchProfile();
     } catch (e) {
-      console.log(e);
       const errorMessage = getErrorMessage(e, errorsForProfile);
       return rejectWithValue(errorMessage);
     }
@@ -121,39 +118,19 @@ export const logoutUser = createAsyncThunk<void, undefined, { rejectValue: strin
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    setIsAuth(state, action) {
+      state.isAuth = action.payload;
+    }
+  },
   extraReducers: (builder) => {
     addAsyncBuilderCases(builder, registration, 'registration');
     addAsyncBuilderCases(builder, getProfile, 'profile');
-    builder
-      .addCase(login.pending, (state) => {
-        state.login.status = 'pending';
-        state.login.error = '';
-      })
-      .addCase(login.fulfilled, (state, action) => {
-        state.login.status = 'fulfilled';
-        state.login.error = '';
-        state.isAuth = true;
-        state.login.data = action.payload;
-      })
-      .addCase(login.rejected, (state, action) => {
-        state.login.status = 'rejected';
-        state.isAuth = false;
-        state.login.error = action.payload;
-      })
-      .addCase(refreshAccessToken.fulfilled, (state, action) => {
-        state.login.status = 'fulfilled';
-        state.isAuth = true;
-        state.login.data = action.payload;
-      })
-      .addCase(refreshAccessToken.rejected, (state, action) => {
-        state.login.status = 'rejected';
-        state.isAuth = false;
-        state.login.error = action.payload;
-      })
-      .addCase(logoutUser.fulfilled, (state) => {
-        state.isAuth = false;
-      });
+    addAsyncBuilderCases(builder, login, 'authTokens');
+    addAsyncBuilderCases(builder, refreshAccessToken, 'authTokens');
+    builder.addCase(logoutUser.fulfilled, () => {});
   }
 });
+
+export const authActions = authSlice.actions;
 export const authReducer = authSlice.reducer;

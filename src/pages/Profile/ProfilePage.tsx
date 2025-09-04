@@ -4,13 +4,12 @@ import { useNavigate } from 'react-router';
 
 import { utilsTokens } from '@/helpers/tokenService.ts';
 import { selectAuthIsAuth, selectAuthProfile } from '@/store/selectors.ts';
-import { getProfile, logoutUser } from '@/store/slices/authSlice.ts';
+import { authActions, getProfile, logoutUser } from '@/store/slices/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '@/store/store.ts';
 
 const { Text } = Typography;
 
 export const ProfilePage = () => {
-  console.log('ProfilePage');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -18,7 +17,6 @@ export const ProfilePage = () => {
   const isAuth = useAppSelector(selectAuthIsAuth);
 
   useEffect(() => {
-    console.log('useEffect', 'ProfilePage');
     if (isAuth) {
       dispatch(getProfile());
     }
@@ -27,6 +25,7 @@ export const ProfilePage = () => {
   const onLogout = async () => {
     await dispatch(logoutUser()).unwrap();
     utilsTokens.removeTokens();
+    dispatch(authActions.setIsAuth(false));
     navigate('/signin');
   };
 

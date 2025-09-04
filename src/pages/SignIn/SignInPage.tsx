@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router';
 
 import { utilsTokens } from '@/helpers/tokenService.ts';
 import { selectAuthLogin } from '@/store/selectors.ts';
-import { login } from '@/store/slices/authSlice.ts';
+import { authActions, login } from '@/store/slices/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '@/store/store.ts';
 
 interface SignInValues {
@@ -26,10 +26,11 @@ export const SignInPage = () => {
     try {
       const tokens = await dispatch(login(value)).unwrap();
       utilsTokens.setTokens(tokens);
+      dispatch(authActions.setIsAuth(true));
       navigate('/');
-    } catch (e) {
+    } catch {
       utilsTokens.removeTokens();
-      console.log(e);
+      dispatch(authActions.setIsAuth(false));
     }
   };
   return (

@@ -12,7 +12,7 @@ export const selectAuthRegistration = createSelector(selectAuthStore, (state: IA
 );
 
 export const selectAuthLogin = createSelector(selectAuthStore, (state: IAuthStore) =>
-  getAsyncRequestData(state.login)
+  getAsyncRequestData(state.authTokens)
 );
 
 export const selectAuthProfile = createSelector(selectAuthStore, (state: IAuthStore) =>
