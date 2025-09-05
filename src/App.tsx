@@ -19,29 +19,43 @@ import { ProfilePage } from '@/pages/Profile/ProfilePage.tsx';
 import { SignInPage } from '@/pages/SignIn/SignInPage.tsx';
 import { SignUpPage } from '@/pages/SignUp/SignUpPage.tsx';
 import { TodosPage } from '@/pages/Todos/TodosPage.tsx';
-import { selectAuthIsAuth } from '@/store/selectors.ts';
-import { authActions, refreshAccessToken } from '@/store/slices/authSlice.ts';
+import { UsersPage } from '@/pages/Users/UsersPage.tsx';
+import { selectAuthIsAuth, selectAuthProfile } from '@/store/selectors.ts';
+import { authActions, getProfile, refreshAccessToken } from '@/store/slices/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '@/store/store.ts';
 
 import './App.css';
 
 type MenuItem = GetProp<MenuProps, 'items'>[number];
-const items: MenuItem[] = [
-  {
-    key: '/todos',
-    icon: <UnorderedListOutlined />,
-    label: <Link to='/todos'>Todo</Link>
-  },
-  {
-    key: '/profile',
-    icon: <UserOutlined />,
-    label: <Link to='/profile'>Profile</Link>
-  }
-];
 
 export const App = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
   const location = useLocation();
+  const { data } = useAppSelector(selectAuthProfile);
+  const isAuth = useAppSelector(selectAuthIsAuth);
+
+  useEffect(() => {
+    if (isAuth) {
+      dispatch(getProfile());
+    }
+  }, [isAuth]);
+  const items: MenuItem[] = [
+    {
+      key: '/todos',
+      icon: <UnorderedListOutlined />,
+      label: <Link to='/todos'>Todo</Link>
+    },
+    {
+      key: '/profile',
+      icon: <UserOutlined />,
+      label: <Link to='/profile'>Profile</Link>
+    }
+  ];
+  if (data?.roles.some((role) => role === 'ADMIN' || role === 'MODERATOR')) {
+    items.push({ key: '/users', icon: <UserOutlined />, label: <Link to='/users'>Users</Link> });
+  }
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
@@ -140,6 +154,10 @@ export const router = createBrowserRouter([
           {
             path: '/profile',
             Component: ProfilePage
+          },
+          {
+            path: '/users',
+            Component: UsersPage
           }
         ]
       }
