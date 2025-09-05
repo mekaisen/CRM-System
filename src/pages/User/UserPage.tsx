@@ -60,6 +60,7 @@ export const UserPage = () => {
       setIsEditing(false);
       await dispatch(getUser(userId!)).unwrap(); // обновить данные
     } catch (error) {
+      console.error(error);
       message.error('Ошибка при обновлении данных');
     } finally {
       setSaving(false);
