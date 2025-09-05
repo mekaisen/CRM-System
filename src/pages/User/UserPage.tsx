@@ -26,7 +26,7 @@ export const UserPage = () => {
 
   useEffect(() => {
     if (userId) {
-      dispatch(getUser(userId));
+      dispatch(getUser(Number(userId)));
     }
   }, [userId]);
   const intialValues = {
@@ -58,7 +58,7 @@ export const UserPage = () => {
       await changeUserData(Number(userId), changedValues);
       message.success('Данные успешно обновлены');
       setIsEditing(false);
-      await dispatch(getUser(userId!)).unwrap(); // обновить данные
+      await dispatch(getUser(Number(userId))).unwrap(); // обновить данные
     } catch (error) {
       console.error(error);
       message.error('Ошибка при обновлении данных');
