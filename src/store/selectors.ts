@@ -22,3 +22,7 @@ export const selectAuthIsAuth = createSelector(
   selectAuthStore,
   (state: IAuthStore) => state.isAuth
 );
+export const selectAuthIsSuccessRegistration = createSelector(
+  selectAuthStore,
+  (state: IAuthStore) => state.isSuccessRegistration
+);
