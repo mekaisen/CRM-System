@@ -19,6 +19,7 @@ import { ProfilePage } from '@/pages/Profile/ProfilePage.tsx';
 import { SignInPage } from '@/pages/SignIn/SignInPage.tsx';
 import { SignUpPage } from '@/pages/SignUp/SignUpPage.tsx';
 import { TodosPage } from '@/pages/Todos/TodosPage.tsx';
+import { UserPage } from '@/pages/User/UserPage.tsx';
 import { UsersPage } from '@/pages/Users/UsersPage.tsx';
 import { selectAuthIsAuth, selectAuthProfile } from '@/store/selectors.ts';
 import { authActions, getProfile, refreshAccessToken } from '@/store/slices/authSlice.ts';
@@ -40,7 +41,7 @@ export const App = () => {
     if (isAuth) {
       dispatch(getProfile());
     }
-  }, [isAuth]);
+  }, [isAuth, location.pathname]);
   const items: MenuItem[] = [
     {
       key: '/todos',
@@ -56,6 +57,7 @@ export const App = () => {
   if (data?.roles.some((role) => role === 'ADMIN' || role === 'MODERATOR')) {
     items.push({ key: '/users', icon: <UserOutlined />, label: <Link to='/users'>Users</Link> });
   }
+
   return (
     <>
       <Layout style={{ minHeight: '100vh' }}>
@@ -113,6 +115,23 @@ const ProtectedRoute = () => {
   }
   return <Outlet />;
 };
+// const ProtectedAdminOrModeratorRoute = () => {
+//   const { data } = useAppSelector(selectAuthProfile);
+//   const navigate = useNavigate();
+//
+//   useEffect(() => {
+//     if (!data?.roles.some((role) => role === 'ADMIN' || role === 'MODERATOR')) {
+//       navigate('/todos');
+//       console.log('yep');
+//     }
+//   }, [data]);
+//
+//   const isAdminOrModer = data?.roles.some((role) => role === 'ADMIN' || role === 'MODERATOR');
+//   if (!isAdminOrModer) {
+//     return null;
+//   }
+//   return <Outlet />;
+// };
 
 // const protectedLoader = async () => {
 //   console.log('render');
@@ -156,8 +175,16 @@ export const router = createBrowserRouter([
             Component: ProfilePage
           },
           {
-            path: '/users',
-            Component: UsersPage
+            children: [
+              {
+                path: '/users',
+                Component: UsersPage
+              },
+              {
+                path: '/users/:userId',
+                Component: UserPage
+              }
+            ]
           }
         ]
       }

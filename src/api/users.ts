@@ -37,7 +37,7 @@ export const fetchUser = (userId: number) => {
 
 export const changeUserRoles = (userId: number, request: UserRolesRequest) => {
   return api
-    .put<User>(`/admin/users/${userId}/rights`, request)
+    .post<User>(`/admin/users/${userId}/rights`, request)
     .then((res) => res.data)
     .catch((error) => {
       if (error instanceof Error) {
@@ -81,7 +81,7 @@ export const unBlockUser = (userId: number) => {
 };
 export const deleteUser = (userId: number) => {
   return api
-    .delete<void>(` /admin/users/${userId}`)
+    .delete<void>(`/admin/users/${userId}`)
     .then((res) => res.data)
     .catch((error) => {
       if (error instanceof Error) {

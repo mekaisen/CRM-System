@@ -33,3 +33,4 @@ export const selectAdminUsers = createSelector(
   selectAdminStore,
   (state: IAdminStore) => state.users
 );
+export const selectAdminUser = createSelector(selectAdminStore, (state: IAdminStore) => state.user);

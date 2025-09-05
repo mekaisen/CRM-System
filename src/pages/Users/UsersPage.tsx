@@ -1,11 +1,11 @@
 import type { RadioChangeEvent } from 'antd';
 
-import { Button, Checkbox, Flex, Input, List, Pagination, Radio, Select } from 'antd';
+import { Checkbox, Flex, Input, Pagination, Radio, Select } from 'antd';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
 
 import type { UserFilters } from '@/types/users.ts';
 
+import { UsersList } from '@/components/UsersList.tsx';
 import { selectAdminUsers, selectAuthIsAuth } from '@/store/selectors.ts';
 import { getUsers } from '@/store/slices/usersSlice.ts';
 import { useAppDispatch, useAppSelector } from '@/store/store.ts';
@@ -20,6 +20,7 @@ const debounce = (callback: (...args: any[]) => void, timeout: number) => {
     }, timeout);
   };
 };
+
 export const UsersPage = () => {
   const isAuth = useAppSelector(selectAuthIsAuth);
   const { data } = useAppSelector(selectAdminUsers);
@@ -31,9 +32,11 @@ export const UsersPage = () => {
       dispatch(getUsers(userFilters));
     }
   }, [isAuth]);
+
   useEffect(() => {
     dispatch(getUsers(userFilters));
   }, [userFilters]);
+
   const handleChange = (value: string) => {
     setUserFilters((prev) => ({
       sortBy: value,
@@ -42,6 +45,7 @@ export const UsersPage = () => {
       sortOrder: prev.sortOrder
     }));
   };
+
   const onChange = (e: RadioChangeEvent) => {
     setUserFilters((prev) => ({
       sortBy: prev.sortBy,
@@ -50,6 +54,7 @@ export const UsersPage = () => {
       sortOrder: e.target.value
     }));
   };
+
   const inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserFilters((prev) => ({
       sortBy: prev.sortBy,
@@ -58,7 +63,9 @@ export const UsersPage = () => {
       sortOrder: prev.sortOrder
     }));
   };
+
   const debounceInput = debounce(inputChange, 250);
+
   return (
     <Flex vertical align={'center'} style={{ width: 600 }}>
       <Flex>
@@ -94,40 +101,7 @@ export const UsersPage = () => {
         />
         <Input onChange={debounceInput} />
       </Flex>
-      <List
-        renderItem={(item) => (
-          <List.Item key={item.id}>
-            <Flex>
-              <div>
-                <div>
-                  <b>Имя пользователя:</b> {item.username}
-                </div>
-                <div>
-                  <b>Email пользователя:</b> {item.email}
-                </div>
-                <div>
-                  <b>Дата регистрации:</b> {new Date(item.date).toLocaleDateString()}
-                </div>
-                <div>
-                  <b>Статус блокировки:</b> {item.isBlocked ? 'Заблокирован' : 'Не заблокирован'}
-                </div>
-                <div>
-                  <b>Роли:</b> {item.roles.join(', ') || 'Нет ролей'}
-                </div>
-
-                <div>
-                  <b>Номер телефона:</b> {item.phoneNumber || 'Отсутствует'}
-                </div>
-              </div>
-              <Link>Перейти в профиль</Link>
-              <Button>Заблокировать</Button>
-              <Button>удалить</Button>
-            </Flex>
-          </List.Item>
-        )}
-        dataSource={data?.data}
-        itemLayout='vertical'
-      />
+      <UsersList userFilters={userFilters} />
       <Pagination
         hideOnSinglePage
         defaultCurrent={1}
