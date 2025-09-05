@@ -31,7 +31,7 @@ export const getUsers = createAsyncThunk<
     return thunkAPI.rejectWithValue('Ошибка получения пользователей');
   }
 });
-export const getUser = createAsyncThunk<User, string, { rejectValue: string }>(
+export const getUser = createAsyncThunk<User, number, { rejectValue: string }>(
   'admin/user',
   async (arg, thunkAPI) => {
     try {
