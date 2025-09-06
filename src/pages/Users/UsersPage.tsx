@@ -1,4 +1,4 @@
-import type { RadioChangeEvent } from 'antd';
+import type { CheckboxChangeEvent, RadioChangeEvent } from 'antd';
 
 import { Checkbox, Flex, Input, Pagination, Radio, Select } from 'antd';
 import { useEffect, useState } from 'react';
@@ -65,7 +65,7 @@ export const UsersPage = () => {
   };
 
   const debounceInput = debounce(inputChange, 250);
-  const onChangePage = (page:number, pageSize:number) => {
+  const onChangePage = (page: number, pageSize: number) => {
     const totalItems = data?.meta.totalAmount ?? -1;
     const offset = (page - 1) * pageSize;
     let limit = pageSize;
@@ -74,22 +74,18 @@ export const UsersPage = () => {
       limit = totalItems - offset;
     }
     setUserFilters((prev) => ({ ...prev, offset: page, limit }));
-  }
+  };
+  const onBlockUser = (e: CheckboxChangeEvent) =>
+    setUserFilters((prev) => ({
+      sortBy: prev.sortBy,
+      search: prev.search,
+      isBlocked: e.target.checked,
+      sortOrder: prev.sortOrder
+    }));
   return (
     <Flex vertical align={'center'} style={{ width: 600 }}>
       <Flex>
-        <Checkbox
-          onChange={(e) =>
-            setUserFilters((prev) => ({
-              sortBy: prev.sortBy,
-              search: prev.search,
-              isBlocked: e.target.checked,
-              sortOrder: prev.sortOrder
-            }))
-          }
-        >
-          заблокированные
-        </Checkbox>
+        <Checkbox onChange={onBlockUser}>заблокированные</Checkbox>
         <Radio.Group
           defaultValue={'asc'}
           onChange={onChange}
