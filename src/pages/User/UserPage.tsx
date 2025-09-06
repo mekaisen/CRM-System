@@ -58,7 +58,7 @@ export const UserPage = () => {
       await changeUserData(Number(userId), changedValues);
       message.success('Данные успешно обновлены');
       setIsEditing(false);
-      await dispatch(getUser(Number(userId))).unwrap(); // обновить данные
+      await dispatch(getUser(Number(userId))).unwrap();
     } catch (error) {
       console.error(error);
       message.error('Ошибка при обновлении данных');
@@ -69,9 +69,9 @@ export const UserPage = () => {
   const onCancel = () => {
     form.resetFields();
     setIsEditing(false);
-  }
-  const onEdit = () => setIsEditing(true)
-  const onBack = () => navigate('..', { relative: 'path' })
+  };
+  const onEdit = () => setIsEditing(true);
+  const onBack = () => navigate('..', { relative: 'path' });
   return (
     <div style={{ maxWidth: 600, margin: 'auto', padding: 20 }}>
       <Title level={2}>Профиль пользователя</Title>
@@ -113,10 +113,7 @@ export const UserPage = () => {
             <Button disabled={saving} htmlType='submit' type='primary' loading={saving}>
               Сохранить
             </Button>
-            <Button
-              disabled={saving}
-              onClick={onCancel}
-            >
+            <Button disabled={saving} onClick={onCancel}>
               Отмена
             </Button>
           </Space>
