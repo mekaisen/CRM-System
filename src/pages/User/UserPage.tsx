@@ -38,7 +38,7 @@ export const UserPage = () => {
     if (data) {
       form.setFieldsValue(intialValues);
     }
-  }, [data, form]);
+  }, [data]);
 
   const onFinish: FormProps<UserRequest>['onFinish'] = async (values) => {
     const changedValues = {
@@ -66,7 +66,12 @@ export const UserPage = () => {
       setSaving(false);
     }
   };
-
+  const onCancel = () => {
+    form.resetFields();
+    setIsEditing(false);
+  }
+  const onEdit = () => setIsEditing(true)
+  const onBack = () => navigate('..', { relative: 'path' })
   return (
     <div style={{ maxWidth: 600, margin: 'auto', padding: 20 }}>
       <Title level={2}>Профиль пользователя</Title>
@@ -100,7 +105,7 @@ export const UserPage = () => {
         </Form.Item>
 
         {!isEditing ? (
-          <Button type='primary' onClick={() => setIsEditing(true)}>
+          <Button type='primary' onClick={onEdit}>
             Редактировать
           </Button>
         ) : (
@@ -110,17 +115,14 @@ export const UserPage = () => {
             </Button>
             <Button
               disabled={saving}
-              onClick={() => {
-                form.resetFields();
-                setIsEditing(false);
-              }}
+              onClick={onCancel}
             >
               Отмена
             </Button>
           </Space>
         )}
       </Form>
-      <Button style={{ marginTop: 20 }} onClick={() => navigate('..', { relative: 'path' })}>
+      <Button style={{ marginTop: 20 }} onClick={onBack}>
         Вернуться к таблице пользователей
       </Button>
     </div>

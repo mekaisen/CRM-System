@@ -65,7 +65,16 @@ export const UsersPage = () => {
   };
 
   const debounceInput = debounce(inputChange, 250);
+  const onChangePage = (page:number, pageSize:number) => {
+    const totalItems = data?.meta.totalAmount ?? -1;
+    const offset = (page - 1) * pageSize;
+    let limit = pageSize;
 
+    if (offset + pageSize > totalItems) {
+      limit = totalItems - offset;
+    }
+    setUserFilters((prev) => ({ ...prev, offset: page, limit }));
+  }
   return (
     <Flex vertical align={'center'} style={{ width: 600 }}>
       <Flex>
@@ -106,16 +115,7 @@ export const UsersPage = () => {
         hideOnSinglePage
         defaultCurrent={1}
         defaultPageSize={20}
-        onChange={(page, pageSize) => {
-          const totalItems = data?.meta.totalAmount ?? -1;
-          const offset = (page - 1) * pageSize;
-          let limit = pageSize;
-
-          if (offset + pageSize > totalItems) {
-            limit = totalItems - offset;
-          }
-          setUserFilters((prev) => ({ ...prev, offset: page, limit }));
-        }}
+        onChange={onChangePage}
         showSizeChanger={false}
         total={data?.meta.totalAmount}
       />
