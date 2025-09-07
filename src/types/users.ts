@@ -2,7 +2,7 @@
 export interface UserFilters {
   isBlocked?: boolean;
   limit?: number; // сколько на странице
-  offset?: number; // страницу
+  page?: number; // страницу
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';

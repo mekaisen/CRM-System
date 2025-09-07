@@ -1,6 +1,4 @@
-import type { CheckboxChangeEvent, RadioChangeEvent } from 'antd';
-
-import { Checkbox, Flex, Input, Pagination, Radio, Select } from 'antd';
+import { Flex, Input, Pagination, Select } from 'antd';
 import { useEffect, useState } from 'react';
 
 import type { UserFilters } from '@/types/users.ts';
@@ -25,7 +23,7 @@ export const UsersPage = () => {
   const isAuth = useAppSelector(selectAuthIsAuth);
   const { data } = useAppSelector(selectAdminUsers);
   const dispatch = useAppDispatch();
-  const [userFilters, setUserFilters] = useState<UserFilters>({});
+  const [userFilters, setUserFilters] = useState<UserFilters>({ limit: 20 });
 
   useEffect(() => {
     if (isAuth) {
@@ -37,80 +35,86 @@ export const UsersPage = () => {
     dispatch(getUsers(userFilters));
   }, [userFilters]);
 
-  const handleChange = (value: string) => {
-    setUserFilters((prev) => ({
-      sortBy: value,
-      search: prev.search,
-      isBlocked: prev.isBlocked,
-      sortOrder: prev.sortOrder
-    }));
-  };
-
-  const onChange = (e: RadioChangeEvent) => {
-    setUserFilters((prev) => ({
-      sortBy: prev.sortBy,
-      search: prev.search,
-      isBlocked: prev.isBlocked,
-      sortOrder: e.target.value
-    }));
-  };
-
-  const inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const debounceOnInputChanged = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
     setUserFilters((prev) => ({
       sortBy: prev.sortBy,
       search: e.target.value,
       isBlocked: prev.isBlocked,
-      sortOrder: prev.sortOrder
+      sortOrder: prev.sortOrder,
+      limit: prev.limit
     }));
+  }, 250);
+
+  const onSortByUsernameOrEmailOrId = (sortBy: string) => {
+    setUserFilters((prev) => {
+      let order = prev.sortOrder;
+      if (!order) {
+        order = 'asc';
+      }
+      order = order === 'asc' ? 'desc' : 'asc';
+      return {
+        sortBy,
+        search: prev.search,
+        isBlocked: prev.isBlocked,
+        sortOrder: order,
+        limit: prev.limit
+      };
+    });
   };
 
-  const debounceInput = debounce(inputChange, 250);
   const onChangePage = (page: number, pageSize: number) => {
     const totalItems = data?.meta.totalAmount ?? -1;
-    const offset = page * pageSize;
+    const offset = (page - 1) * pageSize;
     let limit = pageSize;
-    console.log(page, pageSize, limit);
-    if (offset > totalItems) {
+
+    if (offset + pageSize > totalItems) {
       limit = totalItems - offset;
     }
+
     setUserFilters((prev) => ({ ...prev, page, limit }));
   };
-  const onBlockUser = (e: CheckboxChangeEvent) =>
-    setUserFilters((prev) => ({
-      sortBy: prev.sortBy,
-      search: prev.search,
-      isBlocked: e.target.checked,
-      sortOrder: prev.sortOrder
-    }));
+  const onBlockUser = (value: string) =>
+    setUserFilters((prev) => {
+      let isBlocked: boolean | undefined;
+
+      if (value === 'blockedUsers') {
+        isBlocked = true;
+      }
+      if (value === 'UnblockedUsers') {
+        isBlocked = false;
+      }
+      return {
+        sortBy: prev.sortBy,
+        search: prev.search,
+        isBlocked,
+        sortOrder: prev.sortOrder,
+        limit: prev.limit
+      };
+    });
   return (
-    <Flex vertical align={'center'} style={{ width: 600 }}>
+    <Flex vertical align={'center'}>
       <Flex>
-        <Checkbox onChange={onBlockUser}>заблокированные</Checkbox>
-        <Radio.Group
-          defaultValue={'asc'}
-          onChange={onChange}
-          options={[
-            { value: 'asc', label: 'asc' },
-            { value: 'desc', label: 'desc' }
-          ]}
-        />
         <Select
-          defaultValue='id'
+          defaultValue='allUsers'
           style={{ width: 150 }}
-          onChange={handleChange}
+          onChange={onBlockUser}
           options={[
-            { value: 'email', label: 'email' },
-            { value: 'username', label: 'username' },
-            { value: 'id', label: 'id' }
+            { value: 'allUsers', label: 'Все пользователи' },
+            { value: 'blockedUsers', label: 'Заблокированные пользователи' },
+            { value: 'UnblockedUsers', label: 'Активные пользователи' }
           ]}
         />
-        <Input onChange={debounceInput} />
+
+        <Input onChange={debounceOnInputChanged} />
       </Flex>
-      <UsersList userFilters={userFilters} />
+      <UsersList
+        userFilters={userFilters}
+        onSortByUsernameOrEmailOrId={onSortByUsernameOrEmailOrId}
+      />
       <Pagination
         hideOnSinglePage
         defaultCurrent={1}
-        defaultPageSize={5}
+        defaultPageSize={20}
         onChange={onChangePage}
         showSizeChanger={false}
         total={data?.meta.totalAmount}
