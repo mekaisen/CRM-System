@@ -67,13 +67,13 @@ export const UsersPage = () => {
   const debounceInput = debounce(inputChange, 250);
   const onChangePage = (page: number, pageSize: number) => {
     const totalItems = data?.meta.totalAmount ?? -1;
-    const offset = (page - 1) * pageSize;
+    const offset = page * pageSize;
     let limit = pageSize;
-
-    if (offset + pageSize > totalItems) {
+    console.log(page, pageSize, limit);
+    if (offset > totalItems) {
       limit = totalItems - offset;
     }
-    setUserFilters((prev) => ({ ...prev, offset: page, limit }));
+    setUserFilters((prev) => ({ ...prev, page, limit }));
   };
   const onBlockUser = (e: CheckboxChangeEvent) =>
     setUserFilters((prev) => ({
@@ -110,7 +110,7 @@ export const UsersPage = () => {
       <Pagination
         hideOnSinglePage
         defaultCurrent={1}
-        defaultPageSize={20}
+        defaultPageSize={5}
         onChange={onChangePage}
         showSizeChanger={false}
         total={data?.meta.totalAmount}
