@@ -23,42 +23,14 @@ export const UserItem = ({ user, userFilters }: UserItemProps) => {
   const [modal, contextHolder] = Modal.useModal();
   const [isRolesEditing, setIsRolesEditing] = useState<boolean>(false);
 
-  const onBlockUser = async (userId: number) => {
+  const onUserAction = async (userId: number, callback: (userId: number) => Promise<any>) => {
     try {
       const isConfirm = await modal.confirm({
         title: 'Подтвердите действие',
         content: 'Вы уверены, что хотите заблокировать пользователя?'
       });
       if (isConfirm) {
-        await blockUser(userId);
-        await dispatch(getUsers(userFilters)).unwrap();
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-  const onUnBlockUser = async (userId: number) => {
-    try {
-      const isConfirm = await modal.confirm({
-        title: 'Подтвердите действие',
-        content: 'Вы уверены, что хотите разблокировать пользователя?'
-      });
-      if (isConfirm) {
-        await unBlockUser(userId);
-        await dispatch(getUsers(userFilters)).unwrap();
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-  const onDeleteUser = async (userId: number) => {
-    try {
-      const isConfirm = await modal.confirm({
-        title: 'Подтвердите действие',
-        content: 'Вы уверены, что хотите удалить пользователя?'
-      });
-      if (isConfirm) {
-        await deleteUser(userId);
+        await callback(userId);
         await dispatch(getUsers(userFilters)).unwrap();
       }
     } catch (e) {
@@ -75,15 +47,17 @@ export const UserItem = ({ user, userFilters }: UserItemProps) => {
       console.error(e);
     }
   };
+
   const onClickCancel = () => {
     setIsRolesEditing(false);
   };
   const onClickRolesEdit = () => {
     setIsRolesEditing(true);
   };
-  const onClickDeleteUser = () => onDeleteUser(user.id);
-  const onClickUnBlockUser = () => onUnBlockUser(user.id);
-  const onClockBlockUser = () => onBlockUser(user.id);
+  const onClickUserAction = (callback: (userId: number) => Promise<any>) => () => {
+    onUserAction(user.id, callback);
+  };
+
   return (
     <>
       {contextHolder}
@@ -96,15 +70,19 @@ export const UserItem = ({ user, userFilters }: UserItemProps) => {
         <td>{user.phoneNumber || 'Нет номера телефона'}</td>
         <td>
           <Flex vertical>
-            <Button variant={'solid'} color={'danger'} onClick={onClickDeleteUser}>
+            <Button variant={'solid'} color={'danger'} onClick={onClickUserAction(deleteUser)}>
               Удалить
             </Button>
             {user.isBlocked ? (
-              <Button variant={'dashed'} color={'geekblue'} onClick={onClickUnBlockUser}>
+              <Button
+                variant={'dashed'}
+                color={'geekblue'}
+                onClick={onClickUserAction(unBlockUser)}
+              >
                 разблокировать
               </Button>
             ) : (
-              <Button variant={'dashed'} color={'danger'} onClick={onClockBlockUser}>
+              <Button variant={'dashed'} color={'danger'} onClick={onClickUserAction(blockUser)}>
                 заблокировать
               </Button>
             )}

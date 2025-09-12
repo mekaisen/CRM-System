@@ -25,22 +25,22 @@ const initialState: IAuthStore = {
   authTokens: initAsyncParticle()
 };
 
-const errorsForSignin: Record<any, string> = {
+const errorsForSignin: Record<number, string> = {
   400: 'Ошибка десериализации запроса или неверный ввод',
   401: 'Неверные учетные данные',
   500: 'Внутренняя ошибка сервера'
 };
-const errorsForSignUp: Record<any, string> = {
+const errorsForSignUp: Record<number, string> = {
   400: 'Ошибка десериализации запроса или неверный ввод',
   409: 'Пользователь уже существует',
   500: 'Внутренняя ошибка сервера'
 };
-const errorsForRefresh: Record<any, string> = {
+const errorsForRefresh: Record<number, string> = {
   400: 'Ошибка десериализации запроса',
   401: 'Неверные учетные данные или токен истек',
   500: 'Внутренняя ошибка сервера'
 };
-const errorsForProfile: Record<any, string> = {
+const errorsForProfile: Record<number, string> = {
   400: 'Пользователь не найден',
   500: 'Внутренняя ошибка сервера'
 };

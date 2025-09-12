@@ -21,8 +21,8 @@ export const UserPage = () => {
   const { data } = useAppSelector(selectAdminUser);
   const [form] = Form.useForm();
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [saving, setSaving] = useState<boolean>(false);
 
   useEffect(() => {
     if (userId) {
