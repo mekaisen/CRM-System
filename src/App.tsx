@@ -1,10 +1,7 @@
 import type { GetProp, MenuProps } from 'antd';
 
 import { UnorderedListOutlined, UserOutlined } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
-import { Content } from 'antd/es/layout/layout';
-import Sider from 'antd/es/layout/Sider';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   createBrowserRouter,
   Link,
@@ -14,6 +11,7 @@ import {
   useNavigate
 } from 'react-router';
 
+import { MainLayout } from '@/components/MainLayout.tsx';
 import { utilsTokens } from '@/helpers/tokenService.ts';
 import { ProfilePage } from '@/pages/Profile/ProfilePage.tsx';
 import { SignInPage } from '@/pages/SignIn/SignInPage.tsx';
@@ -30,8 +28,6 @@ import './App.css';
 type MenuItem = GetProp<MenuProps, 'items'>[number];
 
 export const App = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const dispatch = useAppDispatch();
   const location = useLocation();
   const { data } = useAppSelector(selectAuthProfile);
@@ -59,28 +55,9 @@ export const App = () => {
   }
 
   return (
-    <>
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider
-          breakpoint={'md'}
-          collapsed={isOpen}
-          collapsible
-          onCollapse={(value) => setIsOpen(value)}
-        >
-          <Menu
-            defaultSelectedKeys={[location.pathname]}
-            items={items}
-            theme='dark'
-            mode='inline'
-          />
-        </Sider>
-        <Layout>
-          <Content>
-            <Outlet />
-          </Content>
-        </Layout>
-      </Layout>
-    </>
+    <MainLayout items={items}>
+      <Outlet />
+    </MainLayout>
   );
 };
 
