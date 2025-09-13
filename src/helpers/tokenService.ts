@@ -1,47 +1,41 @@
 import type { Token } from '@/types/auth.ts';
 
-const token = () => {
-  let accessToken: string | null = null;
+class TokenService {
+  private accessToken: string | null = null;
 
-  return {
-    getToken() {
-      return accessToken;
-    },
-    setToken(token: string) {
-      accessToken = token;
-    },
-    removeToken() {
-      accessToken = null;
-    }
-  };
-};
+  getToken() {
+    return this.accessToken;
+  }
+  setToken(token: string) {
+    this.accessToken = token;
+  }
+  removeToken() {
+    this.accessToken = null;
+  }
+}
 
-const refreshToken = () => {
-  return {
-    getRefreshToken() {
-      return localStorage.getItem('refreshtoken') ?? '';
-    },
-    setRefreshToken(refreshToken: string) {
-      return localStorage.setItem('refreshtoken', refreshToken);
-    },
-    removeRefreshToken() {
-      return localStorage.removeItem('refreshtoken');
-    }
-  };
-};
+class RefreshToken {
+  getRefreshToken() {
+    return localStorage.getItem('refreshtoken') ?? '';
+  }
+  setRefreshToken(refreshToken: string) {
+    return localStorage.setItem('refreshtoken', refreshToken);
+  }
+  removeRefreshToken() {
+    return localStorage.removeItem('refreshtoken');
+  }
+}
+class UtilityTokens {
+  setTokens({ refreshToken, accessToken }: Token) {
+    refreshTokenService.setRefreshToken(refreshToken);
+    tokenService.setToken(accessToken);
+  }
+  removeTokens() {
+    refreshTokenService.removeRefreshToken();
+    tokenService.removeToken();
+  }
+}
 
-const utilityTokens = () => {
-  return {
-    setTokens({ refreshToken, accessToken }: Token) {
-      refreshTokenService.setRefreshToken(refreshToken);
-      tokenService.setToken(accessToken);
-    },
-    removeTokens() {
-      refreshTokenService.removeRefreshToken();
-      tokenService.removeToken();
-    }
-  };
-};
-export const utilsTokens = utilityTokens();
-export const refreshTokenService = refreshToken();
-export const tokenService = token();
+export const utilsTokens = new UtilityTokens();
+export const refreshTokenService = new RefreshToken();
+export const tokenService = new TokenService();
