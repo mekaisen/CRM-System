@@ -28,7 +28,7 @@ export const getAsyncRequestData = <T>(
   stateParam: IAsyncParticle<T>
 ): {
   data: T | null;
-  error: any;
+  error: string | null;
   status: IAsyncDataStatus;
 } => ({
   data: stateParam?.data,
