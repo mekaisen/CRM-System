@@ -8,7 +8,7 @@ import type {
 
 import { api } from '@/api/axios.ts';
 
-export const fetchUsers = (searchParams: UserFilters) => {
+export const fetchUsers = (searchParams: UserFilters): Promise<MetaResponseUsers<User>> => {
   return api
     .get<MetaResponseUsers<User>>('/admin/users', { params: searchParams })
     .then((res) => {
@@ -21,7 +21,7 @@ export const fetchUsers = (searchParams: UserFilters) => {
       throw new Error('Ошибка получения пользователей');
     });
 };
-export const fetchUser = (userId: number) => {
+export const fetchUser = (userId: number): Promise<User> => {
   return api
     .get<User>(`/admin/users/${userId}`)
     .then((res) => {
@@ -35,7 +35,7 @@ export const fetchUser = (userId: number) => {
     });
 };
 
-export const changeUserRoles = (userId: number, request: UserRolesRequest) => {
+export const changeUserRoles = (userId: number, request: UserRolesRequest): Promise<User> => {
   return api
     .post<User>(`/admin/users/${userId}/rights`, request)
     .then((res) => res.data)
@@ -46,7 +46,7 @@ export const changeUserRoles = (userId: number, request: UserRolesRequest) => {
       throw new Error('Ошибка обновления роли пользователя');
     });
 };
-export const changeUserData = (userId: number, request: UserRequest) => {
+export const changeUserData = (userId: number, request: UserRequest): Promise<User> => {
   return api
     .put<User>(`/admin/users/${userId}`, request)
     .then((res) => res.data)
@@ -57,7 +57,7 @@ export const changeUserData = (userId: number, request: UserRequest) => {
       throw new Error('Ошибка обновления данных пользователя');
     });
 };
-export const blockUser = (userId: number) => {
+export const blockUser = (userId: number): Promise<User> => {
   return api
     .post<User>(`/admin/users/${userId}/block`)
     .then((res) => res.data)
@@ -68,7 +68,7 @@ export const blockUser = (userId: number) => {
       throw new Error('Ошибка блокировки пользователя');
     });
 };
-export const unBlockUser = (userId: number) => {
+export const unBlockUser = (userId: number): Promise<User> => {
   return api
     .post<User>(`/admin/users/${userId}/unblock`)
     .then((res) => res.data)
@@ -79,7 +79,7 @@ export const unBlockUser = (userId: number) => {
       throw new Error('Ошибка разблокировки пользователя');
     });
 };
-export const deleteUser = (userId: number) => {
+export const deleteUser = (userId: number): Promise<void> => {
   return api
     .delete<void>(`/admin/users/${userId}`)
     .then((res) => res.data)

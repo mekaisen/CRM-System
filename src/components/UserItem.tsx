@@ -54,7 +54,7 @@ export const UserItem = ({ user, userFilters }: UserItemProps) => {
   const onClickRolesEdit = () => {
     setIsRolesEditing(true);
   };
-  const onClickUserAction = (callback: (userId: number) => Promise<any>) => () => {
+  const onClickUserAction = (callback: (userId: number) => Promise<User | void>) => () => {
     onUserAction(user.id, callback);
   };
 

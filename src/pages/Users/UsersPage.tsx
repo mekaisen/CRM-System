@@ -8,10 +8,15 @@ import { selectAdminUsers, selectAuthIsAuth } from '@/store/selectors.ts';
 import { getUsers } from '@/store/slices/usersSlice.ts';
 import { useAppDispatch, useAppSelector } from '@/store/store.ts';
 
-const debounce = (callback: (...args: any[]) => void, timeout: number) => {
-  let timer: any;
+type DebounceCallback<Params extends unknown[]> = (...args: Params) => void;
 
-  return (...args: any[]) => {
+const debounce = <Params extends unknown[], Return>(
+  callback: (...args: Params) => Return,
+  timeout: number
+): DebounceCallback<Params> => {
+  let timer: ReturnType<typeof setTimeout>;
+
+  return (...args: Params) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
       callback(...args);
