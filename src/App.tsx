@@ -11,8 +11,9 @@ import {
   useNavigate
 } from 'react-router';
 
+import { AuthLayout } from '@/components/AuthLayout.tsx';
 import { MainLayout } from '@/components/MainLayout.tsx';
-import { utilsTokens } from '@/helpers/tokenService.ts';
+import { tokenService } from '@/helpers/tokenService.ts';
 import { ProfilePage } from '@/pages/Profile/ProfilePage.tsx';
 import { SignInPage } from '@/pages/SignIn/SignInPage.tsx';
 import { SignUpPage } from '@/pages/SignUp/SignUpPage.tsx';
@@ -75,10 +76,10 @@ const ProtectedRoute = () => {
         }
         try {
           const tokens = await dispatch(refreshAccessToken({ refreshToken })).unwrap();
-          utilsTokens.setTokens(tokens);
+          tokenService.setTokens(tokens);
           dispatch(authActions.setIsAuth(true));
         } catch {
-          utilsTokens.removeTokens();
+          tokenService.removeTokens();
           dispatch(authActions.setIsAuth(false));
           navigate('/signin');
         }
@@ -167,6 +168,11 @@ export const router = createBrowserRouter([
       }
     ]
   },
-  { path: '/signup', Component: SignUpPage },
-  { path: '/signin', Component: SignInPage }
+  {
+    Component: AuthLayout,
+    children: [
+      { path: '/signup', Component: SignUpPage },
+      { path: '/signin', Component: SignInPage }
+    ]
+  }
 ]);

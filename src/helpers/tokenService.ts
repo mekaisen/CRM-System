@@ -3,18 +3,15 @@ import type { Token } from '@/types/auth.ts';
 class TokenService {
   private accessToken: string | null = null;
 
-  getToken() {
+  getAccessToken() {
     return this.accessToken;
   }
-  setToken(token: string) {
+  setAccessToken(token: string) {
     this.accessToken = token;
   }
-  removeToken() {
+  removeAccessToken() {
     this.accessToken = null;
   }
-}
-
-class RefreshToken {
   getRefreshToken() {
     return localStorage.getItem('refreshtoken') ?? '';
   }
@@ -24,18 +21,14 @@ class RefreshToken {
   removeRefreshToken() {
     return localStorage.removeItem('refreshtoken');
   }
-}
-class UtilityTokens {
   setTokens({ refreshToken, accessToken }: Token) {
-    refreshTokenService.setRefreshToken(refreshToken);
-    tokenService.setToken(accessToken);
+    this.setRefreshToken(refreshToken);
+    this.setAccessToken(accessToken);
   }
   removeTokens() {
-    refreshTokenService.removeRefreshToken();
-    tokenService.removeToken();
+    this.removeRefreshToken();
+    this.removeAccessToken();
   }
 }
 
-export const utilsTokens = new UtilityTokens();
-export const refreshTokenService = new RefreshToken();
 export const tokenService = new TokenService();

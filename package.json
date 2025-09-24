@@ -15,6 +15,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "antd": "^5.27.1",
     "axios": "^1.11.0",
+    "date-fns": "^4.1.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-redux": "^9.2.0",

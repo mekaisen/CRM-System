@@ -13,6 +13,18 @@ import { useAppDispatch, useAppSelector } from '@/store/store.ts';
 
 const { Title } = Typography;
 
+const getChangedFields = <T extends Record<string, any>>(original: T, updated: T): Partial<T> => {
+  const keys: (keyof typeof original)[] = Object.keys(original);
+  const newObj: Partial<T> = {};
+  keys.forEach((key) => {
+    if (original[key] !== updated[key]) {
+      newObj[key] = updated[key];
+    }
+  });
+
+  return newObj;
+};
+
 export const UserPage = () => {
   const dispatch = useAppDispatch();
   const { userId } = useParams();
@@ -29,43 +41,42 @@ export const UserPage = () => {
       dispatch(getUser(Number(userId)));
     }
   }, [userId]);
-  const intialValues = {
+  const initialValues: UserRequest = {
     username: data?.username,
     email: data?.email,
     phoneNumber: data?.phoneNumber
   };
   useEffect(() => {
     if (data) {
-      form.setFieldsValue(intialValues);
+      form.setFieldsValue(initialValues);
     }
   }, [data]);
 
-  const onFinish: FormProps<UserRequest>['onFinish'] = async (values) => {
-    const changedValues = {
-      username: values.username !== intialValues.username ? values.username : undefined,
-      email: values.email !== intialValues.email ? values.email : undefined,
-      phoneNumber: values.phoneNumber !== intialValues.phoneNumber ? values.phoneNumber : undefined
+  const handleOnFinish = (initialValues: UserRequest) => {
+    const onFinish: FormProps<UserRequest>['onFinish'] = async (values) => {
+      const changedValues = getChangedFields(initialValues, values);
+      const isAnyChanged = Object.keys(changedValues).length > 0;
+
+      if (!isAnyChanged) {
+        message.info('Новые данные не изменены');
+        return;
+      }
+      setSaving(true);
+      try {
+        await changeUserData(Number(userId), changedValues);
+        message.success('Данные успешно обновлены');
+        setIsEditing(false);
+        await dispatch(getUser(Number(userId))).unwrap();
+      } catch (error) {
+        console.error(error);
+        message.error('Ошибка при обновлении данных');
+      } finally {
+        setSaving(false);
+      }
     };
-
-    const isAnyChanged = Object.values(changedValues).some((val) => val !== undefined);
-
-    if (!isAnyChanged) {
-      message.info('Новые данные не изменены');
-      return;
-    }
-    setSaving(true);
-    try {
-      await changeUserData(Number(userId), changedValues);
-      message.success('Данные успешно обновлены');
-      setIsEditing(false);
-      await dispatch(getUser(Number(userId))).unwrap();
-    } catch (error) {
-      console.error(error);
-      message.error('Ошибка при обновлении данных');
-    } finally {
-      setSaving(false);
-    }
+    return onFinish;
   };
+
   const onCancel = () => {
     form.resetFields();
     setIsEditing(false);
@@ -76,7 +87,12 @@ export const UserPage = () => {
     <div style={{ maxWidth: 600, margin: 'auto', padding: 20 }}>
       <Title level={2}>Профиль пользователя</Title>
 
-      <Form initialValues={{ ...intialValues }} form={form} layout='vertical' onFinish={onFinish}>
+      <Form
+        initialValues={{ ...initialValues }}
+        form={form}
+        layout='vertical'
+        onFinish={handleOnFinish(initialValues)}
+      >
         <Form.Item
           label='Имя пользователя'
           name='username'

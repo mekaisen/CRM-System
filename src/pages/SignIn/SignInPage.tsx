@@ -3,8 +3,7 @@ import type { FormProps } from 'antd';
 import { Button, Form, Input, Typography } from 'antd';
 import { Link, useNavigate } from 'react-router';
 
-import { AuthLayout } from '@/components/AuthLayout.tsx';
-import { utilsTokens } from '@/helpers/tokenService.ts';
+import { tokenService } from '@/helpers/tokenService.ts';
 import { selectAuthLogin } from '@/store/selectors.ts';
 import { authActions, login } from '@/store/slices/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '@/store/store.ts';
@@ -26,17 +25,16 @@ export const SignInPage = () => {
   const onFinish: FormProps<SignInValues>['onFinish'] = async (value) => {
     try {
       const tokens = await dispatch(login(value)).unwrap();
-      utilsTokens.setTokens(tokens);
+      tokenService.setTokens(tokens);
       dispatch(authActions.setIsAuth(true));
       navigate('/');
     } catch {
-      utilsTokens.removeTokens();
+      tokenService.removeTokens();
       dispatch(authActions.setIsAuth(false));
     }
   };
   return (
-    <AuthLayout>
-      {' '}
+    <>
       <Title>Авторизация</Title>
       <Form
         name='signin'
@@ -77,6 +75,6 @@ export const SignInPage = () => {
         {error && <Text type={'danger'}>{error}</Text>}
       </Form>
       <Link to={'/signup'}>Регистрация</Link>
-    </AuthLayout>
+    </>
   );
 };

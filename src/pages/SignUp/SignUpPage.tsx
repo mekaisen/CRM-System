@@ -3,7 +3,6 @@ import type { FormProps } from 'antd';
 import { Button, Form, Input, message, Typography } from 'antd';
 import { Link } from 'react-router';
 
-import { AuthLayout } from '@/components/AuthLayout.tsx';
 import { selectAuthIsSuccessRegistration, selectAuthRegistration } from '@/store/selectors.ts';
 import { authActions, registration } from '@/store/slices/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '@/store/store.ts';
@@ -33,7 +32,7 @@ export const SignUpPage = () => {
   return (
     <>
       {contextHolder}
-      <AuthLayout>
+      <>
         <Title>Регистрация</Title>
         <Form
           name='register'
@@ -156,7 +155,7 @@ export const SignUpPage = () => {
         )}
 
         <Link to={'/signin'}>Авторизация</Link>
-      </AuthLayout>
+      </>
     </>
   );
 };

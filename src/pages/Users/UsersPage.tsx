@@ -50,23 +50,6 @@ export const UsersPage = () => {
     }));
   }, 250);
 
-  const onSortByUsernameOrEmailOrId = (sortBy: string) => {
-    setUserFilters((prev) => {
-      let order = prev.sortOrder;
-      if (!order) {
-        order = 'asc';
-      }
-      order = order === 'asc' ? 'desc' : 'asc';
-      return {
-        sortBy,
-        search: prev.search,
-        isBlocked: prev.isBlocked,
-        sortOrder: order,
-        limit: prev.limit
-      };
-    });
-  };
-
   const onChangePage = (page: number, pageSize: number) => {
     const totalItems = data?.meta.totalAmount ?? -1;
     const offset = (page - 1) * pageSize;
@@ -112,10 +95,7 @@ export const UsersPage = () => {
 
         <Input onChange={debounceOnInputChanged} />
       </Flex>
-      <UsersList
-        userFilters={userFilters}
-        onSortByUsernameOrEmailOrId={onSortByUsernameOrEmailOrId}
-      />
+      <UsersList userFilters={userFilters} />
       <Pagination
         hideOnSinglePage
         defaultCurrent={1}
