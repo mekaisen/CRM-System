@@ -40,6 +40,30 @@ export const UsersPage = () => {
     dispatch(getUsers(userFilters));
   }, [userFilters]);
 
+  const onSortByUsernameOrEmailOrId = (sortBy: string) => {
+    setUserFilters((prev) => {
+      let order = prev.sortOrder;
+      if (prev.sortBy !== sortBy) {
+        order = undefined;
+      }
+      if (!order) {
+        order = 'asc';
+      } else if (order === 'asc') {
+        order = 'desc';
+      } else {
+        order = undefined;
+      }
+
+      return {
+        sortBy,
+        search: prev.search,
+        isBlocked: prev.isBlocked,
+        sortOrder: order,
+        limit: prev.limit
+      };
+    });
+  };
+
   const debounceOnInputChanged = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
     setUserFilters((prev) => ({
       sortBy: prev.sortBy,
@@ -95,7 +119,10 @@ export const UsersPage = () => {
 
         <Input onChange={debounceOnInputChanged} />
       </Flex>
-      <UsersList userFilters={userFilters} />
+      <UsersList
+        userFilters={userFilters}
+        onSortByUsernameOrEmailOrId={onSortByUsernameOrEmailOrId}
+      />
       <Pagination
         hideOnSinglePage
         defaultCurrent={1}

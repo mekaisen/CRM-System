@@ -11,9 +11,23 @@ import { useAppSelector } from '@/store/store.ts';
 
 interface UsersListProps {
   userFilters: UserFilters;
+  onSortByUsernameOrEmailOrId: (sortBy: string) => void;
 }
-
-export const UsersList = ({ userFilters }: UsersListProps) => {
+const sorterField = (name: string, userFilters: UserFilters) => {
+  if (name === userFilters.sortBy) {
+    if (userFilters.sortOrder === 'asc') {
+      return 'ascend';
+    }
+    if (userFilters.sortOrder === 'desc') {
+      return 'descend';
+    } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
+};
+export const UsersList = ({ userFilters, onSortByUsernameOrEmailOrId }: UsersListProps) => {
   const { data } = useAppSelector(selectAdminUsers);
 
   const columns: TableColumnsType<User> = [
@@ -21,15 +35,27 @@ export const UsersList = ({ userFilters }: UsersListProps) => {
       title: 'Имя пользователя',
       dataIndex: 'username',
       showSorterTooltip: { target: 'full-header' },
-      sorter: (a, b) => a.username.localeCompare(b.username),
-      defaultSortOrder: 'descend'
+      sorter: true,
+      sortOrder: sorterField('username', userFilters),
+      defaultSortOrder: 'descend',
+      onHeaderCell: () => ({
+        onClick: () => {
+          onSortByUsernameOrEmailOrId('username');
+        }
+      })
     },
     {
       title: 'Email',
       dataIndex: 'email',
       showSorterTooltip: { target: 'full-header' },
-      sorter: (a, b) => a.email.localeCompare(b.email),
-      defaultSortOrder: 'descend'
+      sorter: true,
+      sortOrder: sorterField('email', userFilters),
+      defaultSortOrder: 'descend',
+      onHeaderCell: () => ({
+        onClick: () => {
+          onSortByUsernameOrEmailOrId('email');
+        }
+      })
     },
     {
       title: 'Дата регистрации',
