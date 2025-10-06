@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 import { refresh } from '@/api/auth.ts';
-import { refreshTokenService, tokenService, utilsTokens } from '@/helpers/tokenService.ts';
+import { tokenService } from '@/helpers/tokenService.ts';
 import { authActions } from '@/store/slices/authSlice.ts';
 import { store } from '@/store/store.ts';
 
@@ -9,7 +9,7 @@ export const baseUrl = 'https://easydev.club/api/v1';
 
 export const api = axios.create({ baseURL: baseUrl, withCredentials: true });
 api.interceptors.request.use((config) => {
-  const token = tokenService.getToken();
+  const token = tokenService.getAccessToken();
   if (!token) {
     return config;
   }
@@ -26,7 +26,7 @@ api.interceptors.response.use(
     const url = error.config.url;
 
     if (url.includes('/auth/refresh')) {
-      utilsTokens.removeTokens();
+      tokenService.removeTokens();
       store.dispatch(authActions.setIsAuth(false));
       return Promise.reject(error);
     }
@@ -34,22 +34,22 @@ api.interceptors.response.use(
       isRefreshing = true;
       if (error.response.status === 401) {
         try {
-          const refreshToken = refreshTokenService.getRefreshToken();
+          const refreshToken = tokenService.getRefreshToken();
 
           if (!refreshToken) {
             store.dispatch(authActions.setIsAuth(false));
-            utilsTokens.removeTokens();
+            tokenService.removeTokens();
             return Promise.reject(error);
           }
 
           const tokens = await refresh({ refreshToken });
-          utilsTokens.setTokens(tokens);
+          tokenService.setTokens(tokens);
 
           config.headers.Authorization = `Bearer ${tokens.accessToken}`;
 
           return api(config);
         } catch (e) {
-          utilsTokens.removeTokens();
+          tokenService.removeTokens();
 
           store.dispatch(authActions.setIsAuth(false));
           return Promise.reject(e);
