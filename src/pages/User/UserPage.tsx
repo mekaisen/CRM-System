@@ -13,14 +13,13 @@ import { useAppDispatch, useAppSelector } from '@/store/store.ts';
 
 const { Title } = Typography;
 
-const getChangedFields = <T extends Record<string, any>>(original: T, updated: T): Partial<T> => {
-  const keys: (keyof typeof original)[] = Object.keys(original);
+const getChangedFields = <T extends UserRequest>(original: T, updated: T): Partial<T> => {
   const newObj: Partial<T> = {};
-  keys.forEach((key) => {
+  for (const key in original) {
     if (original[key] !== updated[key]) {
       newObj[key] = updated[key];
     }
-  });
+  }
 
   return newObj;
 };
